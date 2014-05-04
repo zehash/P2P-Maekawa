@@ -6,10 +6,8 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-public class Server extends JFrame {
+public class Server {
 
-	private JTextField userText;
-	private JTextArea chatWindow;
 	private ObjectOutputStream output; // goes away from you
 	private ObjectInputStream input; // goes to you
 	private ServerSocket server; // accepts and sends back connections
@@ -29,7 +27,6 @@ public class Server extends JFrame {
 	}*/
 	
 	public Server(MusicalChairGame mcg, String port, Node node) {
-		super("Hashim's instant Messenger");
 		System.out.println("Server is up!");
 		this.mcg = mcg;
 		this.node = node;
@@ -46,10 +43,10 @@ public class Server extends JFrame {
 				try {
 					waitforConnection(); // Wait until a connection is made
 					setupStreams();
-					whileChatting();
+					readyListen();
 					
 				} catch (EOFException eofException) {
-					showMessage("\n Server Closed the Connection");
+					System.out.println("\n Server Closed the Connection");
 				} finally {
 					//closeSockets();
 				}
@@ -66,10 +63,10 @@ public class Server extends JFrame {
 	 * else cut the connection and wait for another connection. 
 	 */
 	private void waitforConnection() throws IOException {
-		showMessage("Waiting for someone to connect... \n");
+		System.out.println("Waiting for someone to connect... \n");
 		connection = server.accept();
 		node.serverOccupied();
-		showMessage("Connection Established. Now connected to "
+		System.out.println("Connection Established. Now connected to "
 				+ connection.getInetAddress().getHostName() + "\n");
 	}
 
@@ -80,7 +77,7 @@ public class Server extends JFrame {
 		// Receive Data structures
 		input = new ObjectInputStream(connection.getInputStream());
 		// No need to flush (Other PC does that)
-		showMessage("\nStreams are now setup \n");
+		System.out.println("\nStreams are now setup \n");
 
 	}
 
@@ -90,10 +87,9 @@ public class Server extends JFrame {
 	 * 
 	 * @throws IOException
 	 */
-	private void whileChatting() throws IOException {
+	private void readyListen() throws IOException {
 		String message = "You are now connected! ";
 		//sendMessage(message);
-		ableToType(true); // allows the user to type stuff in the textbox
 		do {
 			// Have a connection
 			try {
@@ -101,7 +97,7 @@ public class Server extends JFrame {
 				//showMessage("\n" + "Opponent name : "+opponent.name+", The opponent position : "+opponent.positionX+"," + opponent.positionY);
 				//mcg.updatePlayer(opponent);
 			} catch (ClassNotFoundException cnfException) {
-				showMessage("\n User sent some corrupted data...");
+				System.out.println("\n User sent some corrupted data...");
 			}
 		} while (true);
 
@@ -111,8 +107,7 @@ public class Server extends JFrame {
 	 * Close streams and sockets after the connection is cut
 	 */
 	private void closeSockets() {
-		showMessage("\n Closing Connections... \n");
-		ableToType(false);
+		System.out.println("\n Closing Connections... \n");
 		try {
 			output.close();
 			input.close();
@@ -130,9 +125,9 @@ public class Server extends JFrame {
 			// Sends the message through the output stream
 			output.writeObject("SERVER - " + message);
 			output.flush();
-			showMessage("\nSERVER - " + message);		
+			System.out.println("\nSERVER - " + message);		
 		} catch (IOException ioexception) {
-			chatWindow.append("\nERROR: Message was not sent...\n");
+			System.out.println("\nERROR: Message was not sent...\n");
 		}
 	}
 	
@@ -147,36 +142,8 @@ public class Server extends JFrame {
 			output.flush();
 			output.reset();		
 		} catch (IOException ioexception) {
-			chatWindow.append("\nERROR: Message was not sent...\n");
+			System.out.println("\nERROR: Message was not sent...\n");
 		}
 	}
 	
-	/**
-	 * Display messages in the GUI for the user to see.
-	 * Using a separate thread to handle GUI Invocations 
-	 */
-	private void showMessage(final String text) {
-		SwingUtilities.invokeLater(
-				new Runnable(){ // Create a thread to update the GUI
-					public void run(){
-						chatWindow.append(text);
-					}
-				}
-		);
-	}
-	
-	private void ableToType(final boolean editable) {
-		SwingUtilities.invokeLater(
-				new Runnable(){ // Create a thread to update the GUI
-					public void run(){
-						userText.setEditable(editable);
-					}
-				}
-		);
-	}
-
-	public InetAddress getIPAddress() {
-		return server.getInetAddress();
-	}
-
 }

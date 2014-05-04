@@ -9,15 +9,15 @@ public class PeerDiscoveryPacket implements Serializable {
 
 	
 	private String ipAddress;
-	private int peerNumber;
 	private boolean clientStatus = false;
 	private boolean serverStatus = false;
+	private int peerNumber;
 		
 	public PeerDiscoveryPacket(String IPAddress, int peerNumber, boolean Client, boolean Server) {
 		this.ipAddress = IPAddress;
-		this.peerNumber = peerNumber;
 		this.clientStatus = Client;
 		this.serverStatus = Server;
+		this.peerNumber = peerNumber;
 	}
 	
 	public String getIP() { 
@@ -36,10 +36,6 @@ public class PeerDiscoveryPacket implements Serializable {
 		return serverStatus;
 	}
 	
-	public void setPeerNumber(int number) {
-		peerNumber = number;
-	}
-	
 	public void setClientStatus(boolean newClientStatus) {
 		clientStatus = newClientStatus;
 	}
@@ -47,5 +43,9 @@ public class PeerDiscoveryPacket implements Serializable {
 	public void setServerStatus(boolean newServerStatus) {
 		serverStatus = newServerStatus;
 	}
-		
+	
+	public void setPeerNumber(int peerNumber) {
+		this.peerNumber = peerNumber;
+	}
+	
 }
