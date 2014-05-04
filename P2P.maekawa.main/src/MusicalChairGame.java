@@ -126,6 +126,8 @@ public class MusicalChairGame {
                 mainplayer.repaint();
                 System.out.println("mainplayer position : "+mainplayer.positionX + ","+ mainplayer.positionY);
           //      server.send(mainplayer);
+                node.sendToLeftt(mainplayer);
+                node.sendToRight(mainplayer);
             }
 
             @Override

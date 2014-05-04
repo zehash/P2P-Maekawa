@@ -92,6 +92,7 @@ public class Server {
 		input = new ObjectInputStream(connection.getInputStream());
 		// No need to flush (Other PC does that)
 		System.out.println("\nStreams are now setup \n");
+		sendPlayer(mcg.mainplayer);
 		sendAllPlayerPosition();
 	}
 
