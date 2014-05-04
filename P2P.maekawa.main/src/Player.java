@@ -19,6 +19,10 @@ import java.io.Serializable;
 import javax.swing.JComponent;
 
 public class Player extends JComponent implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	String name;
     Color color;
     int positionX;

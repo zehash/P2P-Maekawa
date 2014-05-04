@@ -1,5 +1,7 @@
 import java.io.Serializable;
 
+import javax.swing.JComponent;
+
 /**
  * This Packet 
  * 
