@@ -70,14 +70,13 @@ public class Server {
 				+ connection.getInetAddress().getHostName() + "\n");
 	}
 	
-	private void sendAllPlayerPosition() {
+	private void sendAllPlayers() {
+
 		for (int i = 0; i < mcg.opponents.size(); i++)
 		{
 			try {
-				output.writeObject((Player)mcg.opponents.get(i));
-				output.flush();
-				output.reset();
-			} catch (IOException e) {
+				sendPlayer(mcg.opponents.get(i));
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -93,7 +92,7 @@ public class Server {
 		// No need to flush (Other PC does that)
 		System.out.println("\nStreams are now setup \n");
 		sendPlayer(mcg.mainplayer);
-		sendAllPlayerPosition();
+		sendAllPlayers();
 	}
 
 	/**
@@ -103,12 +102,14 @@ public class Server {
 	 * @throws IOException
 	 */
 	private void readyListen() throws IOException {
-		String message = "You are now connected! ";
+		NodePacket node;
 		//sendMessage(message);
 		do {
 			// Have a connection
 			try {
-				opponent = (Player) input.readObject(); // Read incomming stream
+				node = (NodePacket) input.readObject(); // Read incomming stream
+				opponent = new Player(Color.RED, node.getPositionX(), node.getPositionY());
+				opponent.name = node.getName();
 				//showMessage("\n" + "Opponent name : "+opponent.name+", The opponent position : "+opponent.positionX+"," + opponent.positionY);
 				mcg.updatePlayer(opponent);
 				mcg.node.sendToLeftt(opponent);
@@ -120,8 +121,10 @@ public class Server {
 	}
 	
 	public void sendPlayer(Player player){
+		NodePacket node;
 		try {
-			output.writeObject((Player)player);
+			node = new NodePacket(player.name, player.positionX, player.positionY);
+			output.writeObject(node);
 			output.flush();
 			output.reset();
 		} catch (IOException e) {

@@ -1,5 +1,6 @@
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.EOFException;
@@ -59,8 +60,10 @@ public class Client {
 	}
 	
 	public void sendPlayer(Player player){
+		NodePacket node;
 		try {
-			output.writeObject((Player)player);
+			node = new NodePacket(player.name, player.positionX, player.positionY);
+			output.writeObject(node);
 			output.flush();
 			output.reset();
 		} catch (IOException e) {
@@ -98,11 +101,13 @@ public class Client {
 	 * @throws IOException
 	 */
 	private void readyListen() throws IOException {
-		PeerDiscoveryPacket message;
+		NodePacket node;
 		do {
 			// Have a connection
 			try {
-				opponent = (Player) input.readObject(); // Read incomming stream
+				node = (NodePacket) input.readObject(); // Read incomming stream
+				opponent = new Player(Color.RED, node.getPositionX(), node.getPositionY());
+				opponent.name = node.getName();
 				mcg.updatePlayer(opponent);
 				mcg.node.sendToRight(opponent);
 			} catch (ClassNotFoundException cnfException) {
