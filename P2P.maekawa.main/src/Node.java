@@ -5,8 +5,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.net.Inet4Address;
 import java.net.Socket;
 
 import javax.swing.JFrame;
@@ -36,6 +35,8 @@ public class Node extends JFrame {
 	private int connectedNode = 0;
 	private MusicalChairGame mcg;
 	private Node node = this;
+	private boolean isConnectedAsClient = false;
+	private boolean neverBeClient = false;
 
 	/*public static void main(String[] args) {
 		Client Fox = new Client("10.1.1.9");
@@ -61,7 +62,7 @@ public class Node extends JFrame {
 		setSize(400, 150);
 		setVisible(true);
 		this.mcg = mcg;
-		packet = new PeerDiscoveryPacket(InetAddress.getLocalHost().getHostAddress(), true, true);
+		packet = new PeerDiscoveryPacket(Inet4Address.getLocalHost().getHostAddress(),0 , true, true);
 	}
 
 	/**
@@ -130,7 +131,7 @@ public class Node extends JFrame {
 	 */
 	private void connectToPeerDiscovery() throws IOException {
 		showMessage("Connecting to a Peer Discovery... \n");
-		connectionPeerD = new Socket(InetAddress.getByName(serverIP), 13360);
+		connectionPeerD = new Socket(Inet4Address.getByName(serverIP), 13360);
 		
 	}	
 	
@@ -157,6 +158,7 @@ public class Node extends JFrame {
 					// TODO Auto-generated method stub
 					try {
 						rightConnector = new Server(mcg, "1234", node);
+						rightConnector.startServer();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -164,7 +166,6 @@ public class Node extends JFrame {
 				
 			});
 			serverThread.start();
-			packet.setClientStatus(false);
 			System.out.println("Sending a packet : "+packet.getIP()+", Server Status : "+packet.getServerStatus());
 			sendMessagePD();
 		} catch (Exception e) {
@@ -186,8 +187,12 @@ public class Node extends JFrame {
 			try {
 				messageRecvPD = (PeerDiscoveryPacket) inputPD.readObject(); // Read incomming stream
 				showMessage("\n" + "IPAddress : "+messageRecvPD.getIP()+"Server : "+messageRecvPD.getServerStatus()+"Client : "+messageRecvPD.getClientStatus());
-				if ((messageRecvPD.getServerStatus() == true) && !(messageRecvPD.getIP().equals(InetAddress.getLocalHost().getHostAddress())))
+				if (messageRecvPD.getPeerNumber() == 1) 
+					neverBeClient = true;
+				if ((isConnectedAsClient == false) && (neverBeClient == false) && (messageRecvPD.getServerStatus() == true) && !(messageRecvPD.getIP().equals(Inet4Address.getLocalHost().getHostAddress())))
 					{
+					System.out.println("isConnectedAsClient : "+isConnectedAsClient+", Neverbeclient : "+neverBeClient+"Message IP : "+messageRecvPD.getIP()+", Packet PeerNumber : "+messageRecvPD.getPeerNumber());
+					
 						try {
 							Thread clientThread = new Thread(new Runnable() {
 
@@ -196,6 +201,7 @@ public class Node extends JFrame {
 									// TODO Auto-generated method stub
 									try {
 										leftConnector = new Client(messageRecvPD.getIP(), mcg);
+										System.out.println("Try connecting to "+messageRecvPD.getIP()+", This IP : "+Inet4Address.getLocalHost().getHostAddress());
 										leftConnector.startClient();
 									} catch (Exception e) {
 										e.printStackTrace();
@@ -205,6 +211,7 @@ public class Node extends JFrame {
 							});
 							clientThread.start();
 							packet.setClientStatus(false);
+							isConnectedAsClient = true;
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

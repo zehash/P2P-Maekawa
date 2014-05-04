@@ -6,7 +6,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
+import java.net.Inet4Address;
 import java.net.Socket;
 
 import javax.swing.JFrame;
@@ -15,10 +15,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-public class Client extends JFrame {
+public class Client {
 
-	private JTextField userText;
-	private JTextArea chatWindow;
 	private ObjectOutputStream output; // goes away from you
 	private ObjectInputStream input; // goes to you
 	private String message = "";
@@ -49,39 +47,9 @@ public class Client extends JFrame {
 		try {
 			connectToServer(); // Connect to a Server
 			setupStreams(); // Creates data streams
-			Thread t1 = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					try {
-						listenClient(); // Allows messaging back and forth
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				
-			});
-			Thread t2 = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					try {
-						while (true)
-						{
-							sendMessage(); // Allows messaging back and forth
-							Thread.sleep(1000);
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}}
-				
-			});
-			t1.start();
-			t2.start();
+			readyListen();
 		} catch (EOFException eofException) {
-			showMessage("\n Client Closed the Connection");
+			System.out.println("\n Client Closed the Connection");
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
 		} finally {
@@ -97,7 +65,7 @@ public class Client extends JFrame {
 			output.reset();
 			//showMessage("\n Sending a packet : "+packet.getIP());
 		} catch (IOException ioexception) {
-			chatWindow.append("\nERROR: Message was not sent...\n");
+			System.out.println("\nERROR: Message was not sent...\n");
 		}
 	}
 
@@ -106,8 +74,8 @@ public class Client extends JFrame {
 	 * Else make the connection wait for a server and activate the server using the node. 
 	 */
 	private void connectToServer() throws IOException {
-		showMessage("Connecting to a server... \n");
-		connection = new Socket(InetAddress.getByName(serverIP), 1234);
+		System.out.println("Connecting to a server... \n");
+		connection = new Socket(Inet4Address.getByName(serverIP), 1234);
 	}	
 	
 	private void setupStreams() throws IOException {
@@ -118,7 +86,7 @@ public class Client extends JFrame {
 		// Receive Data structures
 		input = new ObjectInputStream(connection.getInputStream());
 		// No need to flush (Other PC does that)
-		showMessage("\nStreams are now setup \n");
+		System.out.println("\nStreams are now setup \n");
 
 	}
 	
@@ -128,17 +96,16 @@ public class Client extends JFrame {
 	 * 
 	 * @throws IOException
 	 */
-	private void listenClient() throws IOException {
-		ableToType(true); // allows the user to type stuff in the textbox
+	private void readyListen() throws IOException {
 		PeerDiscoveryPacket message;
 		do {
 			// Have a connection
 			try {
 				message = (PeerDiscoveryPacket) input.readObject(); // Read incomming stream
-				showMessage("\n" + "IPAddress : "+message.getIP()+"Server : "+message.getServerStatus()+"Client : "+message.getClientStatus());
+				System.out.println("\n" + "IPAddress : "+message.getIP()+"Server : "+message.getServerStatus()+"Client : "+message.getClientStatus());
 
 			} catch (ClassNotFoundException cnfException) {
-				showMessage("\nUser sent some corrupted data...");
+				System.out.println("\nUser sent some corrupted data...");
 			}
 		} while (true);
 
@@ -148,8 +115,7 @@ public class Client extends JFrame {
 	 * Close streams and sockets after the connection is cut
 	 */
 	private void closeSockets() {
-		showMessage("\nClosing Connections... \n");
-		ableToType(false);
+		System.out.println("\nClosing Connections... \n");
 		try {
 			output.close();
 			input.close();
@@ -167,35 +133,12 @@ public class Client extends JFrame {
 			// Sends the message through the output stream
 			output.writeObject("CLIENT - " + message);
 			output.flush();
-			showMessage("\nCLIENT - " + message);		
+			System.out.println("\nCLIENT - " + message);		
 		} catch (IOException ioexception) {
-			chatWindow.append("\nERROR: Message was not sent...\n");
+			System.out.println("\nERROR: Message was not sent...\n");
 		}
 	}
 	
-	/**
-	 * Display messages in the GUI for the user to see.
-	 * Using a separate thread to handle GUI Invocations 
-	 */
-	private void showMessage(final String text) {
-		SwingUtilities.invokeLater(
-				new Runnable(){ // Create a thread to update the GUI
-					public void run(){
-						chatWindow.append(text);
-					}
-				}
-		);
-	}
-	
-	private void ableToType(final boolean editable) {
-		SwingUtilities.invokeLater(
-				new Runnable(){ // Create a thread to update the GUI
-					public void run(){
-						userText.setEditable(editable);
-					}
-				}
-		);
-	}
 
 	
 }
