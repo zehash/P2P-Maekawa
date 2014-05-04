@@ -28,6 +28,8 @@ public class Client {
 	private PeerDiscoveryPacket packet;
 	private MusicalChairGame mcg;
 	private Player opponent;
+	private NodePacket nodePacketRecv;
+	private NodePacket nodePacketSend;
 	
 	/*public static void main(String[] args) {
 		Client Fox = new Client("10.1.1.9");
@@ -60,10 +62,9 @@ public class Client {
 	}
 	
 	public void sendPlayer(Player player){
-		NodePacket nodePacket;
 		try {
-			nodePacket = new NodePacket(player.name, player.positionX, player.positionY);
-			output.writeObject(nodePacket);
+			nodePacketSend = new NodePacket(player.name, player.positionX, player.positionY);
+			output.writeObject(nodePacketSend);
 			output.flush();
 			output.reset();
 		} catch (IOException e) {
@@ -101,13 +102,12 @@ public class Client {
 	 * @throws IOException
 	 */
 	private void readyListen() throws IOException {
-		NodePacket nodePacket;
 		do {
 			// Have a connection
 			try {
-				nodePacket = (NodePacket) input.readObject(); // Read incomming stream
-				opponent = new Player(Color.RED, nodePacket.getPositionX(), nodePacket.getPositionY());
-				opponent.name = nodePacket.getName();
+				nodePacketRecv = (NodePacket) input.readObject(); // Read incomming stream
+				opponent = new Player(Color.RED, nodePacketRecv.getPositionX(), nodePacketRecv.getPositionY());
+				opponent.name = nodePacketRecv.getName();
 				mcg.updatePlayer(opponent);
 				mcg.node.sendToRight(opponent);
 			} catch (ClassNotFoundException cnfException) {
