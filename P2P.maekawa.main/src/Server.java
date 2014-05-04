@@ -14,7 +14,6 @@ public class Server {
 	private MusicalChairGame mcg;
 	private Player opponent;
 	private Node node;
-
 	//private Node Peer;
 	
 	/** Basic socket connection */
@@ -102,14 +101,14 @@ public class Server {
 	 * @throws IOException
 	 */
 	private void readyListen() throws IOException {
-		NodePacket node;
+		NodePacket nodePacket;
 		//sendMessage(message);
 		do {
 			// Have a connection
 			try {
-				node = (NodePacket) input.readObject(); // Read incomming stream
-				opponent = new Player(Color.RED, node.getPositionX(), node.getPositionY());
-				opponent.name = node.getName();
+				nodePacket = (NodePacket) input.readObject(); // Read incomming stream
+				opponent = new Player(Color.RED, nodePacket.getPositionX(), nodePacket.getPositionY());
+				opponent.name = nodePacket.getName();
 				//showMessage("\n" + "Opponent name : "+opponent.name+", The opponent position : "+opponent.positionX+"," + opponent.positionY);
 				mcg.updatePlayer(opponent);
 				mcg.node.sendToLeftt(opponent);
@@ -121,9 +120,9 @@ public class Server {
 	}
 	
 	public void sendPlayer(Player player){
-		NodePacket node;
+		NodePacket nodePacket;
 		try {
-			node = new NodePacket(player.name, player.positionX, player.positionY);
+			nodePacket = new NodePacket(player.name, player.positionX, player.positionY);
 			output.writeObject(node);
 			output.flush();
 			output.reset();

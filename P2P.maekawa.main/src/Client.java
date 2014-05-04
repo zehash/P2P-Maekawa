@@ -60,10 +60,10 @@ public class Client {
 	}
 	
 	public void sendPlayer(Player player){
-		NodePacket node;
+		NodePacket nodePacket;
 		try {
-			node = new NodePacket(player.name, player.positionX, player.positionY);
-			output.writeObject(node);
+			nodePacket = new NodePacket(player.name, player.positionX, player.positionY);
+			output.writeObject(nodePacket);
 			output.flush();
 			output.reset();
 		} catch (IOException e) {
@@ -101,13 +101,13 @@ public class Client {
 	 * @throws IOException
 	 */
 	private void readyListen() throws IOException {
-		NodePacket node;
+		NodePacket nodePacket;
 		do {
 			// Have a connection
 			try {
-				node = (NodePacket) input.readObject(); // Read incomming stream
-				opponent = new Player(Color.RED, node.getPositionX(), node.getPositionY());
-				opponent.name = node.getName();
+				nodePacket = (NodePacket) input.readObject(); // Read incomming stream
+				opponent = new Player(Color.RED, nodePacket.getPositionX(), nodePacket.getPositionY());
+				opponent.name = nodePacket.getName();
 				mcg.updatePlayer(opponent);
 				mcg.node.sendToRight(opponent);
 			} catch (ClassNotFoundException cnfException) {
