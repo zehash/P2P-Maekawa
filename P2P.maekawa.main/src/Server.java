@@ -69,6 +69,20 @@ public class Server {
 		System.out.println("Connection Established. Now connected to "
 				+ connection.getInetAddress().getHostName() + "\n");
 	}
+	
+	private void sendAllPlayerPosition() {
+		for (int i = 0; i < mcg.opponents.size(); i++)
+		{
+			try {
+				output.writeObject(mcg.opponents.get(i));
+				output.flush();
+				output.reset();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 
 	private void setupStreams() throws IOException {
 		// Creating the path to another computer
@@ -78,7 +92,7 @@ public class Server {
 		input = new ObjectInputStream(connection.getInputStream());
 		// No need to flush (Other PC does that)
 		System.out.println("\nStreams are now setup \n");
-
+		sendAllPlayerPosition();
 	}
 
 	/**
@@ -95,12 +109,25 @@ public class Server {
 			try {
 				opponent = (Player) input.readObject(); // Read incomming stream
 				//showMessage("\n" + "Opponent name : "+opponent.name+", The opponent position : "+opponent.positionX+"," + opponent.positionY);
-				//mcg.updatePlayer(opponent);
+				mcg.updatePlayer(opponent);
+				mcg.node.sendToLeftt(opponent);
 			} catch (ClassNotFoundException cnfException) {
 				System.out.println("\n User sent some corrupted data...");
 			}
 		} while (true);
 
+	}
+	
+	public void sendPlayer(Player player){
+		try {
+			output.writeObject(player);
+			output.flush();
+			output.reset();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	/**
@@ -126,21 +153,6 @@ public class Server {
 			output.writeObject("SERVER - " + message);
 			output.flush();
 			System.out.println("\nSERVER - " + message);		
-		} catch (IOException ioexception) {
-			System.out.println("\nERROR: Message was not sent...\n");
-		}
-	}
-	
-	/**
-	 * This method sends the message to our peers or clients
-	 */
-	public void send(Player message) {
-		try {
-			// Sends the message through the output stream
-			System.out.println("User location : "+message.positionX+","+message.positionY);
-			output.writeObject(message);
-			output.flush();
-			output.reset();		
 		} catch (IOException ioexception) {
 			System.out.println("\nERROR: Message was not sent...\n");
 		}

@@ -24,10 +24,11 @@ public class MusicalChairGame {
     JFrame screenGame = new JFrame();
     JLabel timerlabel = new JLabel();
     JLabel gamestatus = new JLabel();
-    Node node;
     Chair chair;
     int numOpponent = 0;
     int movement = 5;
+    int initPlayerX = 0; 
+    int initPlayerY = 0;
 
     /**
      * @param args the command line arguments
@@ -37,12 +38,14 @@ public class MusicalChairGame {
     public Player mainplayer;
     public MusicalChairGame mcg = this;
     public ArrayList<Player> opponents = new ArrayList<Player>();
+    public Node node;
     
     public MusicalChairGame() {
 	    try {
 	        screenGame.setLayout(null);
 	        arenaGame = new Arena(screenGame, 600,300);
-	        mainplayer = new Player(Color.RED, 200,200);
+	        setInitPlayerPosition();
+	        mainplayer = new Player(Color.RED, initPlayerX,initPlayerY);
 	        mainplayer.name = InetAddress.getLocalHost().getHostAddress();
 	    } catch (Exception e) {
 	    	e.printStackTrace();
@@ -89,12 +92,23 @@ public class MusicalChairGame {
         chair = new Chair(getX, getY);
     }
     
+    public void setInitPlayerPosition() {
+        Random randomGenerator = new Random();
+        initPlayerX = 1;
+        while (initPlayerX % 5 != 0)
+        	initPlayerX = randomGenerator.nextInt(600-40);
+        initPlayerY = 1;
+        while (initPlayerY % 5 != 0)
+        	initPlayerY = randomGenerator.nextInt(300-40);
+        System.out.println("Initial position : "+initPlayerX+" "+initPlayerY);
+    }
+    
     public void setListenerPlayer() {
         mainplayer.setFocusable(true);
         mainplayer.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(java.awt.event.KeyEvent e) {
-            //    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+               //    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
             @Override

@@ -26,8 +26,8 @@ public class Node extends JFrame {
 	private String serverIP;
 	/** Basic socket connection */
 	private Socket connectionPeerD;
-	private Server rightConnector;
-	private Client leftConnector;
+	private Server rightConnector = null;
+	private Client leftConnector = null;
 	private PeerDiscoveryPacket packet; // Packets sent to PD
 	private PeerDiscoveryPacket messageRecvPD; // Packets received from PD
 	private MusicalChairGame mcg;
@@ -246,6 +246,18 @@ public class Node extends JFrame {
 			showMessage("\nCLIENT - " + message);		
 		} catch (IOException ioexception) {
 			chatWindow.append("\nERROR: Message was not sent...\n");
+		}
+	}
+	
+	public void sendToRight(Player player) {
+		if (rightConnector != null) {
+			rightConnector.sendPlayer(player);
+		}
+	}
+	
+	public void sendToLeftt(Player player) {
+		if (leftConnector != null) {
+			leftConnector.sendPlayer(player);
 		}
 	}
 	

@@ -26,6 +26,7 @@ public class Client {
 	private Socket connection;
 	private PeerDiscoveryPacket packet;
 	private MusicalChairGame mcg;
+	private Player opponent;
 	
 	/*public static void main(String[] args) {
 		Client Fox = new Client("10.1.1.9");
@@ -57,16 +58,16 @@ public class Client {
 		}
 	}
 	
-	public void sendMessage() {
+	public void sendPlayer(Player player){
 		try {
-			// Sends the message through the output stream
-			output.writeObject(packet);
+			output.writeObject(player);
 			output.flush();
 			output.reset();
-			//showMessage("\n Sending a packet : "+packet.getIP());
-		} catch (IOException ioexception) {
-			System.out.println("\nERROR: Message was not sent...\n");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 	}
 
 	/**
@@ -101,9 +102,9 @@ public class Client {
 		do {
 			// Have a connection
 			try {
-				message = (PeerDiscoveryPacket) input.readObject(); // Read incomming stream
-				System.out.println("\n" + "IPAddress : "+message.getIP()+"Server : "+message.getServerStatus()+"Client : "+message.getClientStatus());
-
+				opponent = (Player) input.readObject(); // Read incomming stream
+				mcg.updatePlayer(opponent);
+				mcg.node.sendToRight(opponent);
 			} catch (ClassNotFoundException cnfException) {
 				System.out.println("\nUser sent some corrupted data...");
 			}
