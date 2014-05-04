@@ -1,13 +1,6 @@
-/PeerDiscovery$Task.class
-/PeerDiscovery.class
-/PeerDiscoveryPacket.class
 /Arena.class
 /BgPanel.class
 /Chair.class
-/Client$1.class
-/Client$2.class
-/Client$3.class
-/Client$4.class
 /Client.class
 /MusicalChairGame$1.class
 /MusicalChairGame$2.class
@@ -20,8 +13,9 @@
 /Node$5.class
 /Node$6.class
 /Node.class
+/PeerDiscovery$Task.class
+/PeerDiscovery.class
+/PeerDiscoveryPacket.class
 /Player.class
-/Server$1.class
-/Server$2.class
 /Server.class
 /woodenfield.jpg

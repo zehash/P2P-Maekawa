@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.Socket;
 
 import javax.swing.JFrame;
@@ -161,6 +162,7 @@ public class Node extends JFrame {
 			});
 			serverThread.start();
 			System.out.println("Sending a packet : "+packet.getIP()+", Server Status : "+packet.getServerStatus());
+			sendMessagePD();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -185,15 +187,13 @@ public class Node extends JFrame {
 				if ((isConnectedAsClient == false) && (neverBeClient == false) && (messageRecvPD.getServerStatus() == true) && !(messageRecvPD.getIP().equals(Inet4Address.getLocalHost().getHostAddress())))
 					{
 					System.out.println("isConnectedAsClient : "+isConnectedAsClient+", Neverbeclient : "+neverBeClient+"Message IP : "+messageRecvPD.getIP()+", Packet PeerNumber : "+messageRecvPD.getPeerNumber());
+					leftConnector = new Client(messageRecvPD.getIP(), mcg);
 					
 						try {
 							Thread clientThread = new Thread(new Runnable() {
-
 								@Override
 								public void run() {
-									// TODO Auto-generated method stub
 									try {
-										leftConnector = new Client(messageRecvPD.getIP(), mcg);
 										System.out.println("Try connecting to "+messageRecvPD.getIP()+", This IP : "+Inet4Address.getLocalHost().getHostAddress());
 										leftConnector.startClient();
 									} catch (Exception e) {
@@ -212,6 +212,9 @@ public class Node extends JFrame {
 				}
 			catch (ClassNotFoundException cnfException) {
 				showMessage("\nUser sent some corrupted data...");
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		} while (true);
 

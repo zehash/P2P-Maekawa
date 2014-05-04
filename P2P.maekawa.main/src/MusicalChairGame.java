@@ -208,7 +208,7 @@ public class MusicalChairGame {
 			public void run() {
 				// TODO Auto-generated method stub
 				try {
-					node = new Node("10.1.1.16", mcg);
+					node = new Node("10.1.1.18", mcg);
 					node.startPeerDiscoveryConnection();
 				} catch (Exception e) {
 					e.printStackTrace();
