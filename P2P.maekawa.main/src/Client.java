@@ -60,7 +60,7 @@ public class Client {
 	
 	public void sendPlayer(Player player){
 		try {
-			output.writeObject(player);
+			output.writeObject((Player)player);
 			output.flush();
 			output.reset();
 		} catch (IOException e) {

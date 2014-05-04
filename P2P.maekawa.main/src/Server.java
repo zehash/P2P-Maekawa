@@ -74,7 +74,7 @@ public class Server {
 		for (int i = 0; i < mcg.opponents.size(); i++)
 		{
 			try {
-				output.writeObject(mcg.opponents.get(i));
+				output.writeObject((Player)mcg.opponents.get(i));
 				output.flush();
 				output.reset();
 			} catch (IOException e) {
@@ -121,7 +121,7 @@ public class Server {
 	
 	public void sendPlayer(Player player){
 		try {
-			output.writeObject(player);
+			output.writeObject((Player)player);
 			output.flush();
 			output.reset();
 		} catch (IOException e) {
