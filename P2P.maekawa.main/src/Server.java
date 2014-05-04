@@ -8,7 +8,7 @@ import javax.swing.*;
 
 public class Server {
 
-	private ObjectOutputStream output; // goes away from you
+	private ObjectOutputStream output = null; // goes away from you
 	private ObjectInputStream input; // goes to you
 	private ServerSocket server; // accepts and sends back connections
 	private MusicalChairGame mcg;
@@ -121,16 +121,17 @@ public class Server {
 	}
 	
 	public void sendPlayer(Player player){
-		try {
-			nodePacketSend = new NodePacket(player.name, player.positionX, player.positionY);
-			output.writeObject(nodePacketSend);
-			output.flush();
-			output.reset();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		if (output != null) {
+			try {
+				nodePacketSend = new NodePacket(player.name, player.positionX, player.positionY);
+				output.writeObject(nodePacketSend);
+				output.flush();
+				output.reset();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}		
 	}
 
 	/**
