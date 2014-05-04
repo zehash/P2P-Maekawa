@@ -116,7 +116,6 @@ public class PeerDiscovery {
 
 			try { // read message and display it
 				do {
-					System.out.println("wfssdgfds");
 					processConnection();
 				} while (true);
 			} catch (EOFException eofException) {
@@ -180,10 +179,8 @@ public class PeerDiscovery {
 		private void processConnection() throws IOException,
 				ClassNotFoundException {
 			try {
-				System.out.println("PEERDISCOVERY>>> gdshgd");
 				PeerDiscoveryPacket packetData = (PeerDiscoveryPacket) input
 						.readObject();
-				System.out.println("PEERDISCOVERY>>> Iwfdsdm here");
 				
 				FOUND = false;
 				for (int h = 0; h < nodeTable.size(); h++) {
@@ -199,7 +196,7 @@ public class PeerDiscovery {
 				if (FOUND != true) {
 					nodeTable.add(packetData); // add new packet
 				}
-
+				
 				prepareToSendDataToPeers();
 				
 			} // end try
@@ -232,9 +229,13 @@ public class PeerDiscovery {
 		 */
 		private void broadcastDataToPeers(PeerDiscoveryPacket peerDiscoveryPacket) {
 			try { 
+				
 				System.out
 						.println("PEERDISCOVERY>>> Transmitting DATA PACKETS to PEERS "
-								+ peerDiscoveryPacket.getIP());
+								+ peerDiscoveryPacket.getIP() + " Nodetable.size = " + nodeTable.size() + " ServerStat " +
+								peerDiscoveryPacket.getServerStatus() + " AND ClientStat " + peerDiscoveryPacket.getClientStatus() );
+				
+				peerDiscoveryPacket.setPeerNumber(nodeTable.size());
 				output.writeObject(peerDiscoveryPacket);
 				output.flush(); // flush output to Node
 			} 

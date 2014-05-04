@@ -19,29 +19,20 @@ public class Node extends JFrame {
 
 	private JTextField userText;
 	private JTextArea chatWindow;
-	private ObjectOutputStream outputPD; // goes away from you
-	private ObjectInputStream inputPD; // goes to you
+	private ObjectOutputStream outputPD; // Sends data Packets to PD
+	private ObjectInputStream inputPD; // Gets Data Packets from PD
 	
 	private String message = "";
 	private String serverIP;
-	//private Node   Peer; 	
 	/** Basic socket connection */
 	private Socket connectionPeerD;
-//	private Socket rightSocket;
-//	private ServerSocket leftSocket;
 	private Server rightConnector;
 	private Client leftConnector;
-	private PeerDiscoveryPacket packet;
-	private PeerDiscoveryPacket messageRecvPD;
-	private int connectedNode = 0;
+	private PeerDiscoveryPacket packet; // Packets sent to PD
+	private PeerDiscoveryPacket messageRecvPD; // Packets received from PD
 	private MusicalChairGame mcg;
 	private Node node = this;
 
-	/*public static void main(String[] args) {
-		Client Fox = new Client("10.1.1.9");
-		Fox.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Fox.startClient();
-	}*/
 	
 	// Constructor
 	public Node(String host, MusicalChairGame mcg) throws Exception {
@@ -61,7 +52,7 @@ public class Node extends JFrame {
 		setSize(400, 150);
 		setVisible(true);
 		this.mcg = mcg;
-		packet = new PeerDiscoveryPacket(InetAddress.getLocalHost().getHostAddress(), true, true);
+		packet = new PeerDiscoveryPacket(InetAddress.getLocalHost().getHostAddress(), 0, true, true);
 	}
 
 	/**
@@ -103,15 +94,12 @@ public class Node extends JFrame {
 				
 			});*/
 			t1.start();
-			//t2.start();
 		} catch (EOFException eofException) {
 			showMessage("\n Client Closed the Connection");
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
-		} finally {
-		//	closeSockets();
 		}
-	}
+	}	
 	
 	public void sendMessagePD() {
 		try {
@@ -129,17 +117,23 @@ public class Node extends JFrame {
 	 * Connect to a Peer Discovery server if such a server is available. 
 	 */
 	private void connectToPeerDiscovery() throws IOException {
-		showMessage("Connecting to a Peer Discovery... \n");
+		showMessage("Connecting to the Peer Network... \n");
 		connectionPeerD = new Socket(InetAddress.getByName(serverIP), 13360);
-		
 	}	
 	
-	/*Sending to Peer discovery that server is occupied*/
+	/**
+	 * Sending to Peer discovery that server-socket of the node is occupied 
+	 */
 	public void serverOccupied() {
 		packet.setServerStatus(false);
 		sendMessagePD();
 	}
 	
+	/**
+	 * Sets up streams to receive data packets from the PeerDiscovery Network.
+	 * Next it turns on its ServerSocket to await incomming connections.
+	 * @throws IOException
+	 */
 	private void setupStreamsPD() throws IOException {
 		// Creating the path to another computer
 		// Send Data structures
@@ -164,9 +158,7 @@ public class Node extends JFrame {
 				
 			});
 			serverThread.start();
-			packet.setClientStatus(false);
 			System.out.println("Sending a packet : "+packet.getIP()+", Server Status : "+packet.getServerStatus());
-			sendMessagePD();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
