@@ -37,7 +37,7 @@ public class MusicalChairGame {
     public Arena arenaGame;
     public Player mainplayer;
     public MusicalChairGame mcg = this;
-    public ArrayList<Player> opponents = new ArrayList<Player>();
+    public static ArrayList<Player> opponents = new ArrayList<Player>();
     public Node node;
     
     public MusicalChairGame() {
