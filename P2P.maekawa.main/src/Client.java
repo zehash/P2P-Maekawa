@@ -27,7 +27,7 @@ public class Client {
 	private Socket connection;
 	private PeerDiscoveryPacket packet;
 	private MusicalChairGame mcg;
-	private Player opponent;
+	//private Player opponent;
 	private NodePacket nodePacketRecv;
 	private NodePacket nodePacketSend;
 	
@@ -61,10 +61,21 @@ public class Client {
 		}
 	}
 	
-	public void sendPlayer(Player player){
+	/*public void sendPlayer(Player player){
 		try {
 			nodePacketSend = new NodePacket(player.name, player.positionX, player.positionY);
 			output.writeObject(nodePacketSend);
+			output.flush();
+			output.reset();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}*/
+	public void sendPlayer(NodePacket playerPacket){
+		try {
+			output.writeObject(playerPacket);
 			output.flush();
 			output.reset();
 		} catch (IOException e) {
@@ -92,7 +103,8 @@ public class Client {
 		input = new ObjectInputStream(connection.getInputStream());
 		// No need to flush (Other PC does that)
 		System.out.println("\nStreams are now setup \n");
-		sendPlayer(mcg.mainplayer);
+		nodePacketSend = new NodePacket(mcg.mainplayer.name, mcg.mainplayer.positionX, mcg.mainplayer.positionY);
+		sendPlayer(nodePacketSend);
 	}
 	
 	/**
@@ -106,10 +118,10 @@ public class Client {
 			// Have a connection
 			try {
 				nodePacketRecv = (NodePacket) input.readObject(); // Read incomming stream
-				opponent = new Player(Color.RED, nodePacketRecv.getPositionX(), nodePacketRecv.getPositionY());
-				opponent.name = nodePacketRecv.getName();
-				mcg.updatePlayer(opponent);
-				mcg.node.sendToRight(opponent);
+				//opponent = new Player(Color.RED, nodePacketRecv.getPositionX(), nodePacketRecv.getPositionY());
+				//opponent.name = nodePacketRecv.getName();
+				mcg.updatePlayer(nodePacketRecv);
+				mcg.node.sendToRight(nodePacketRecv);
 			} catch (ClassNotFoundException cnfException) {
 				System.out.println("\nUser sent some corrupted data...");
 			}

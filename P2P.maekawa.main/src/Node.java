@@ -249,7 +249,7 @@ public class Node extends JFrame {
 		}
 	}
 	
-	public void sendToRight(Player player) {
+	/*public void sendToRight(Player player) {
 		if (rightConnector != null) {
 			rightConnector.sendPlayer(player);
 		}
@@ -258,6 +258,18 @@ public class Node extends JFrame {
 	public void sendToLeftt(Player player) {
 		if (leftConnector != null) {
 			leftConnector.sendPlayer(player);
+		}
+	}*/
+	
+	public void sendToRight(NodePacket playerPacket) {
+		if (rightConnector != null) {
+			rightConnector.sendPlayer(playerPacket);
+		}
+	}
+	
+	public void sendToLeftt(NodePacket playerPacket) {
+		if (leftConnector != null) {
+			leftConnector.sendPlayer(playerPacket);
 		}
 	}
 	

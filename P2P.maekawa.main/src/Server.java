@@ -12,7 +12,7 @@ public class Server {
 	private ObjectInputStream input; // goes to you
 	private ServerSocket server; // accepts and sends back connections
 	private MusicalChairGame mcg;
-	private Player opponent;
+	//private Player opponent;
 	private Node node;
 	private NodePacket nodePacketRecv;
 	private NodePacket nodePacketSend;
@@ -76,7 +76,8 @@ public class Server {
 		for (int i = 0; i < mcg.opponents.size(); i++)
 		{
 			try {
-				sendPlayer(mcg.opponents.get(i));
+				nodePacketSend = new NodePacket(mcg.opponents.get(i).name, mcg.opponents.get(i).positionX, mcg.opponents.get(i).positionY);
+				sendPlayer(nodePacketSend);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -92,7 +93,8 @@ public class Server {
 		input = new ObjectInputStream(connection.getInputStream());
 		// No need to flush (Other PC does that)
 		System.out.println("\nStreams are now setup \n");
-		sendPlayer(mcg.mainplayer);
+		nodePacketSend = new NodePacket(mcg.mainplayer.name, mcg.mainplayer.positionX, mcg.mainplayer.positionY);
+		sendPlayer(nodePacketSend);
 		sendAllPlayers();
 	}
 
@@ -108,11 +110,11 @@ public class Server {
 			// Have a connection
 			try {
 				nodePacketRecv = (NodePacket) input.readObject(); // Read incomming stream
-				opponent = new Player(Color.RED, nodePacketRecv.getPositionX(), nodePacketRecv.getPositionY());
-				opponent.name = nodePacketRecv.getName();
+				//opponent = new Player(Color.RED, nodePacketRecv.getPositionX(), nodePacketRecv.getPositionY());
+				//opponent.name = nodePacketRecv.getName();
 				//showMessage("\n" + "Opponent name : "+opponent.name+", The opponent position : "+opponent.positionX+"," + opponent.positionY);
-				mcg.updatePlayer(opponent);
-				mcg.node.sendToLeftt(opponent);
+				mcg.updatePlayer(nodePacketRecv);
+				mcg.node.sendToLeftt(nodePacketRecv);
 			} catch (ClassNotFoundException cnfException) {
 				System.out.println("\n User sent some corrupted data...");
 			}
@@ -120,7 +122,7 @@ public class Server {
 
 	}
 	
-	public void sendPlayer(Player player){
+	/*public void sendPlayer(Player player){
 		if (output != null) {
 			try {
 				nodePacketSend = new NodePacket(player.name, player.positionX, player.positionY);
@@ -132,6 +134,17 @@ public class Server {
 				e.printStackTrace();
 			}
 		}		
+	}*/
+	public void sendPlayer(NodePacket playerPacket){
+		try {
+			output.writeObject(playerPacket);
+			output.flush();
+			output.reset();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	/**

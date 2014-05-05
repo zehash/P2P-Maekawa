@@ -126,8 +126,9 @@ public class MusicalChairGame {
                 mainplayer.repaint();
                 System.out.println("mainplayer position : "+mainplayer.positionX + ","+ mainplayer.positionY);
           //      server.send(mainplayer);
-                node.sendToLeftt(mainplayer);
-                node.sendToRight(mainplayer);
+                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
+                node.sendToLeftt(mainPlayerPacket);
+                node.sendToRight(mainPlayerPacket);
             }
 
             @Override
@@ -137,7 +138,7 @@ public class MusicalChairGame {
         });
     }
     
-    public void updatePlayer(Player opponent) {
+  /*  public void updatePlayer(Player opponent) {
     	int found = -1;
     	for (int i = 0; i < opponents.size(); i++) {
     		if (opponents.get(i).name.equals(opponent.name))
@@ -153,6 +154,32 @@ public class MusicalChairGame {
     		arenaGame.setPlayerinArena(opponents.get(numOpponent-1));
     	} else {
     		Player updateOpponent = opponents.get(found);
+    		updateOpponent.positionX = opponent.positionX;
+    		updateOpponent.positionY = opponent.positionY;
+    		updateOpponent.repaint();
+    		opponents.set(found, updateOpponent);
+    	}
+    }*/
+    
+    public void updatePlayer(NodePacket playerPacket) {
+    	Player opponent = new Player(Color.RED, playerPacket.getPositionX(), playerPacket.getPositionY());
+    	opponent.name = new String(playerPacket.getName());
+    	int found = -1;
+    	for (int i = 0; i < opponents.size(); i++) {
+    		if (opponents.get(i).name.equals(opponent.name))
+    			found = i;
+    	}
+    	
+    	System.out.println("Found : "+found);
+    	
+    	if (found == -1) {
+    		numOpponent++;
+    		opponents.add(opponent);
+    		System.out.println("Painting : "+opponents.get(numOpponent-1).name);
+    		arenaGame.setPlayerinArena(opponents.get(numOpponent-1));
+    	} else {
+    		Player updateOpponent = opponents.get(found);
+    		System.out.println("Updated player : "+updateOpponent.name);
     		updateOpponent.positionX = opponent.positionX;
     		updateOpponent.positionY = opponent.positionY;
     		updateOpponent.repaint();
