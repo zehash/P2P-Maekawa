@@ -6,27 +6,24 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+/*Server class is responsible for being a server and implements server activity,
+ * starts from opening a connection and waiting the connection to wait.
+ * In this game, we should allow only one node that can connect to the game
+ */
+
 public class Server {
 
 	private ObjectOutputStream output = null; // goes away from you
 	private ObjectInputStream input; // goes to you
 	private ServerSocket server; // accepts and sends back connections
 	private MusicalChairGame mcg;
-	//private Player opponent;
 	private Node node;
 	private NodePacket nodePacketRecv;
 	private NodePacket nodePacketSend;
-	//private Node Peer;
 	
 	/** Basic socket connection */
 	private Socket connection;
 
-	/*public static void main(String[] args) {
-		Server Test = new Server();
-		Test.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Test.startServer();
-	}*/
-	
 	public Server(MusicalChairGame mcg, String port, Node node) {
 		System.out.println("Server is up!");
 		this.mcg = mcg;
@@ -71,7 +68,10 @@ public class Server {
 				+ connection.getInetAddress().getHostName() + "\n");
 	}
 	
-	private void sendAllPlayers() {
+	/*Send all players method is to send all of the opponent information to the connected
+	 * node. 
+	 */
+	private void sendAllOpponentsInformation() {
 
 		for (int i = 0; i < mcg.opponents.size(); i++)
 		{
@@ -85,6 +85,7 @@ public class Server {
 		}
 	}
 
+	/*Setting up the streams*/
 	private void setupStreams() throws IOException {
 		// Creating the path to another computer
 		// Send Data structures
@@ -95,7 +96,7 @@ public class Server {
 		System.out.println("\nStreams are now setup \n");
 		nodePacketSend = new NodePacket(mcg.mainplayer.name, mcg.mainplayer.positionX, mcg.mainplayer.positionY);
 		sendPlayer(nodePacketSend);
-		sendAllPlayers();
+		sendAllOpponentsInformation();
 	}
 
 	/**
@@ -110,9 +111,6 @@ public class Server {
 			// Have a connection
 			try {
 				nodePacketRecv = (NodePacket) input.readObject(); // Read incomming stream
-				//opponent = new Player(Color.RED, nodePacketRecv.getPositionX(), nodePacketRecv.getPositionY());
-				//opponent.name = nodePacketRecv.getName();
-				//showMessage("\n" + "Opponent name : "+opponent.name+", The opponent position : "+opponent.positionX+"," + opponent.positionY);
 				mcg.updatePlayer(nodePacketRecv);
 				mcg.node.sendToLeftt(nodePacketRecv);
 			} catch (ClassNotFoundException cnfException) {
@@ -122,29 +120,19 @@ public class Server {
 
 	}
 	
-	/*public void sendPlayer(Player player){
+	/*Sending a player information to the connected node. The server can only send a messge if
+	 * there is a client connection*/
+	public void sendPlayer(NodePacket playerPacket){
 		if (output != null) {
 			try {
-				nodePacketSend = new NodePacket(player.name, player.positionX, player.positionY);
-				output.writeObject(nodePacketSend);
+				output.writeObject(playerPacket);
 				output.flush();
 				output.reset();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}		
-	}*/
-	public void sendPlayer(NodePacket playerPacket){
-		try {
-			output.writeObject(playerPacket);
-			output.flush();
-			output.reset();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		
 	}
 
 	/**

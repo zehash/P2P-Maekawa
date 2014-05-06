@@ -16,26 +16,26 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+/* Client class is responsible for being a client and implements client activity,
+ * starts from opening a connection to connect to a waiting server.
+ * In this game, we should allow only one connection to a server
+ */
+
 public class Client {
 
 	private ObjectOutputStream output; // goes away from you
 	private ObjectInputStream input; // goes to you
 	private String message = "";
 	private String serverIP;
-	//private Node   Peer; 	
+	
 	/** Basic socket connection */
 	private Socket connection;
 	private PeerDiscoveryPacket packet;
 	private MusicalChairGame mcg;
-	//private Player opponent;
+	
 	private NodePacket nodePacketRecv;
 	private NodePacket nodePacketSend;
 	
-	/*public static void main(String[] args) {
-		Client Fox = new Client("10.1.1.9");
-		Fox.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Fox.startClient();
-	}*/
 	
 	// Constructor
 	public Client(String host, MusicalChairGame mcg) throws Exception {
@@ -61,18 +61,7 @@ public class Client {
 		}
 	}
 	
-	/*public void sendPlayer(Player player){
-		try {
-			nodePacketSend = new NodePacket(player.name, player.positionX, player.positionY);
-			output.writeObject(nodePacketSend);
-			output.flush();
-			output.reset();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}*/
+	/*Send a player information to the server*/
 	public void sendPlayer(NodePacket playerPacket){
 		try {
 			output.writeObject(playerPacket);
@@ -94,9 +83,9 @@ public class Client {
 		connection = new Socket(Inet4Address.getByName(serverIP), 1234);
 	}	
 	
+	/*Setting up input and output stream*/
 	private void setupStreams() throws IOException {
 		// Creating the path to another computer
-		// Send Data structures
 		output = new ObjectOutputStream(connection.getOutputStream());
 		output.flush();
 		// Receive Data structures
@@ -118,8 +107,6 @@ public class Client {
 			// Have a connection
 			try {
 				nodePacketRecv = (NodePacket) input.readObject(); // Read incomming stream
-				//opponent = new Player(Color.RED, nodePacketRecv.getPositionX(), nodePacketRecv.getPositionY());
-				//opponent.name = nodePacketRecv.getName();
 				mcg.updatePlayer(nodePacketRecv);
 				mcg.node.sendToRight(nodePacketRecv);
 			} catch (ClassNotFoundException cnfException) {
@@ -142,21 +129,5 @@ public class Client {
 			ioException.printStackTrace();
 		}
 	}
-	
-	/**
-	 * This method sends the message to our peers or clients
-	 */
-	private void sendMessage(String message) {
-		try {
-			// Sends the message through the output stream
-			output.writeObject("CLIENT - " + message);
-			output.flush();
-			System.out.println("\nCLIENT - " + message);		
-		} catch (IOException ioexception) {
-			System.out.println("\nERROR: Message was not sent...\n");
-		}
-	}
-	
-
 	
 }

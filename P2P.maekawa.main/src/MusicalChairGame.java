@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/**
+/** The game will start by initializing the GUI, pre-process the opponent (giving slots)
  *
  * @author Jemie
  */
@@ -74,12 +74,14 @@ public class MusicalChairGame {
         screenGame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
     
+    /*Initialize the game, by setting the arena, set the keyboard listener to player*/
     public void initGame() {
         setScreen();
         setListenerPlayer();
         setChairAppear();
     }
     
+    /*Make the chair appear*/
     public void setChairAppear() {
         Random randomGenerator = new Random();
         int getX = 1;
@@ -88,10 +90,22 @@ public class MusicalChairGame {
         int getY = 1;
         while (getY % 5 != 0)
             getY = randomGenerator.nextInt(300-40);
-        System.out.println(getX+" "+getY);
         chair = new Chair(getX, getY);
     }
     
+    /*Initializing 10 empty opponents (Based on numberOpponentSlotCreated)*/
+    public void setInitOpponents() {
+    	int numberOpponentSlotCreated = 10;
+    	for (int i = 0; i < numberOpponentSlotCreated; i++)
+    	{
+    		Player opponent = new Player(Color.RED, 1000,1000);
+    		opponent.name = "";
+        	arenaGame.setPlayerinArena(opponent);
+        	opponents.add(opponent);
+    	}
+    }
+    
+    /*initialize the main player position at the beginning of the game*/
     public void setInitPlayerPosition() {
         Random randomGenerator = new Random();
         initPlayerX = 1;
@@ -100,7 +114,6 @@ public class MusicalChairGame {
         initPlayerY = 1;
         while (initPlayerY % 5 != 0)
         	initPlayerY = randomGenerator.nextInt(300-40);
-        System.out.println("Initial position : "+initPlayerX+" "+initPlayerY);
     }
     
     public void setListenerPlayer() {
@@ -124,8 +137,6 @@ public class MusicalChairGame {
                                break;
                 }
                 mainplayer.repaint();
-                System.out.println("mainplayer position : "+mainplayer.positionX + ","+ mainplayer.positionY);
-          //      server.send(mainplayer);
                 NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
                 node.sendToLeftt(mainPlayerPacket);
                 node.sendToRight(mainPlayerPacket);
@@ -138,55 +149,34 @@ public class MusicalChairGame {
         });
     }
     
-  /*  public void updatePlayer(Player opponent) {
-    	int found = -1;
-    	for (int i = 0; i < opponents.size(); i++) {
-    		if (opponents.get(i).name.equals(opponent.name))
-    			found = i;
-    	}
-    	
-    	System.out.println("Found : "+found);
-    	
-    	if (found == -1) {
-    		numOpponent++;
-    		opponents.add(opponent);
-    		System.out.println("Painting : "+opponents.get(numOpponent-1).name);
-    		arenaGame.setPlayerinArena(opponents.get(numOpponent-1));
-    	} else {
-    		Player updateOpponent = opponents.get(found);
-    		updateOpponent.positionX = opponent.positionX;
-    		updateOpponent.positionY = opponent.positionY;
-    		updateOpponent.repaint();
-    		opponents.set(found, updateOpponent);
-    	}
-    }*/
-    
+    /*Update the opponent player : if the opponent name is not exists, set an empty
+     * opponent as it is, else it will update the existing one
+     */
     public void updatePlayer(NodePacket playerPacket) {
-    	Player opponent = new Player(Color.RED, playerPacket.getPositionX(), playerPacket.getPositionY());
-    	opponent.name = new String(playerPacket.getName());
     	int found = -1;
     	for (int i = 0; i < opponents.size(); i++) {
-    		if (opponents.get(i).name.equals(opponent.name))
+    		if (opponents.get(i).name.equals(playerPacket.getName()))
     			found = i;
     	}
     	
-    	System.out.println("Found : "+found);
-    	
     	if (found == -1) {
     		numOpponent++;
-    		opponents.add(opponent);
-    		System.out.println("Painting : "+opponents.get(numOpponent-1).name);
-    		arenaGame.setPlayerinArena(opponents.get(numOpponent-1));
+    		Player updateOpponent = opponents.get(numOpponent-1);
+    		updateOpponent.name = new String(playerPacket.getName());
+    		updateOpponent.positionX = playerPacket.getPositionX();
+    		updateOpponent.positionY = playerPacket.getPositionY();
+    		updateOpponent.repaint();
+    		opponents.set(numOpponent-1, updateOpponent);
     	} else {
     		Player updateOpponent = opponents.get(found);
-    		System.out.println("Updated player : "+updateOpponent.name);
-    		updateOpponent.positionX = opponent.positionX;
-    		updateOpponent.positionY = opponent.positionY;
+    		updateOpponent.positionX = playerPacket.getPositionX();
+    		updateOpponent.positionY = playerPacket.getPositionY();
     		updateOpponent.repaint();
     		opponents.set(found, updateOpponent);
     	}
     }
     
+    /*Checking whether the object is overlap to each other*/
     public boolean isOverlap(Object obj1, Object obj2) {
         boolean overlap = false;
         Point p1,p2;
@@ -207,6 +197,9 @@ public class MusicalChairGame {
         return overlap;
     }
     
+    /*Timer of the game. when the seconds are 5 seconds left, the chair will appear
+     * 
+     */
     public void startTimer() {
         Thread t;
         t = new Thread(new Runnable() {
@@ -237,13 +230,19 @@ public class MusicalChairGame {
         t.start();
     }
     
+    /*Simply a method to launch the game, by initializing an empty opponents as slots 
+     * putting the mainplayer in the arena
+     */
     public void launchGame() {
+    	setInitOpponents();
         arenaGame.setPlayerinArena(mainplayer);
        // startTimer();
         screenGame.setVisible(true);
     }
     
-    
+    /*The node is started in a different Thread
+     * 
+     */
     public void startNode() {
         Thread thread = new Thread(new Runnable() {
 
@@ -251,7 +250,7 @@ public class MusicalChairGame {
 			public void run() {
 				// TODO Auto-generated method stub
 				try {
-					node = new Node("10.1.1.18", mcg);
+					node = new Node("192.168.2.5", mcg);
 					node.startPeerDiscoveryConnection();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -263,7 +262,9 @@ public class MusicalChairGame {
         thread.start();
     }
     
-    
+    /*Main method of the game, it will create the GUI, launching the GUI, and start
+     * its responsibility as a node
+     */
     public static void main(String[] args) {
         // TODO code application logic here
         MusicalChairGame mcg = new MusicalChairGame();

@@ -15,6 +15,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+/*Node Class is responsible to give the program a property as a node in P2P application
+ * The node will handle a connection from a Peer Discovery, Server, and Client
+ * Server and Client will run on different Threads
+ */
+
 public class Node extends JFrame {
 
 	private JTextField userText;
@@ -26,8 +31,8 @@ public class Node extends JFrame {
 	private String serverIP;
 	/** Basic socket connection */
 	private Socket connectionPeerD;
-	private Server rightConnector = null;
-	private Client leftConnector = null;
+	private Server rightConnector = null; //Server variable
+	private Client leftConnector = null; //Client variable
 	private PeerDiscoveryPacket packet; // Packets sent to PD
 	private PeerDiscoveryPacket messageRecvPD; // Packets received from PD
 	private MusicalChairGame mcg;
@@ -58,14 +63,13 @@ public class Node extends JFrame {
 	}
 
 	/**
-	 * Set up and run the Client Side The port number its on and how many connections
-	 * can wait on it.
+	 * Set up and run the Peer Discovery connection. The listen state is run in another Thread
+	 * So the peer discovery will not be blocked while listening to the connection
 	 */
 	public void startPeerDiscoveryConnection() {
 		try {
 			connectToPeerDiscovery(); // Connect to a Server
 			setupStreamsPD(); // Creates data streams
-			//listenPD();
 			Thread t1 = new Thread(new Runnable() {
 
 				@Override
@@ -79,22 +83,6 @@ public class Node extends JFrame {
 				}
 				
 			});
-			/*Thread t2 = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					try {
-						while (true)
-						{
-							sendMessagePD(); // Allows messaging back and forth
-							Thread.sleep(1000);
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}}
-				
-			});*/
 			t1.start();
 		} catch (EOFException eofException) {
 			showMessage("\n Client Closed the Connection");
@@ -103,9 +91,12 @@ public class Node extends JFrame {
 		}
 	}	
 	
+	/*
+	 * This method is to send a Peer Discovery Packet to the Peer Discovery Server
+	 * of which reporting the status of the node
+	 */
 	public void sendMessagePD() {
 		try {
-			// Sends the message through the output stream
 			outputPD.writeObject(packet);
 			outputPD.flush();
 			outputPD.reset();
@@ -249,24 +240,14 @@ public class Node extends JFrame {
 		}
 	}
 	
-	/*public void sendToRight(Player player) {
-		if (rightConnector != null) {
-			rightConnector.sendPlayer(player);
-		}
-	}
-	
-	public void sendToLeftt(Player player) {
-		if (leftConnector != null) {
-			leftConnector.sendPlayer(player);
-		}
-	}*/
-	
+	/*Send NodePacket from the server*/
 	public void sendToRight(NodePacket playerPacket) {
 		if (rightConnector != null) {
 			rightConnector.sendPlayer(playerPacket);
 		}
 	}
-	
+
+	/*Send NodePacket from the client*/
 	public void sendToLeftt(NodePacket playerPacket) {
 		if (leftConnector != null) {
 			leftConnector.sendPlayer(playerPacket);

@@ -17,6 +17,10 @@ import java.awt.geom.Ellipse2D;
 import java.io.Serializable;
 
 import javax.swing.JComponent;
+/*
+ * Player class is responsible for keeping the information of a player
+ * On the game
+ */
 
 public class Player extends JComponent implements Serializable {
 	/**

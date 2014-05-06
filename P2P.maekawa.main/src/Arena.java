@@ -12,6 +12,9 @@ import javax.swing.*;
 import java.awt.*;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
+/*
+ * Arena class is responsible for setting up the board/area of the game
+ */
 class BgPanel extends JPanel {
     
     Image bg;
