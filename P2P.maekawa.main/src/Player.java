@@ -50,11 +50,13 @@ public class Player extends JComponent implements Serializable {
         positionY = newY;
     }
     
-    public void movePosition(int newX, int newY) {
-        if (((positionX + newX) > 0) && ((positionX + newX) < 600 - 20))
-            positionX += newX;
-        if (((positionY + newY) > 0) && ((positionY + newY) < 300 - 20))
-            positionY += newY;
+    public void movePosition(int newX, int newY, boolean isAllowed) {
+    	if (isAllowed){
+	        if (((positionX + newX) > 0) && ((positionX + newX) < 600 - 20))
+	            positionX += newX;
+	        if (((positionY + newY) > 0) && ((positionY + newY) < 300 - 20))
+	            positionY += newY;
+    	}
     }
     
     @Override

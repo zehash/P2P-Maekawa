@@ -39,6 +39,7 @@ public class MusicalChairGame {
     public MusicalChairGame mcg = this;
     public static ArrayList<Player> opponents = new ArrayList<Player>();
     public Node node;
+    public boolean isAllowedToMove = true;
     
     public MusicalChairGame() {
 	    try {
@@ -127,19 +128,23 @@ public class MusicalChairGame {
             @Override
             public void keyPressed(java.awt.event.KeyEvent e) {
                 switch (e.getKeyChar()) {
-                    case 'w' : mainplayer.movePosition(0, -movement);
+                    case 'w' : mainplayer.movePosition(0, -movement, isAllowedToMove);
                                break;
-                    case 'a' : mainplayer.movePosition(-movement, 0);
+                    case 'a' : mainplayer.movePosition(-movement, 0, isAllowedToMove);
                                break;
-                    case 'd' : mainplayer.movePosition(+movement, 0);
+                    case 'd' : mainplayer.movePosition(+movement, 0, isAllowedToMove);
                                break;
-                    case 's' : mainplayer.movePosition(0, +movement);
+                    case 's' : mainplayer.movePosition(0, +movement, isAllowedToMove);
                                break;
                 }
                 mainplayer.repaint();
-                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
-                node.sendToLeftt(mainPlayerPacket);
-                node.sendToRight(mainPlayerPacket);
+	            if (isAllowedToMove) {
+	                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
+	                node.sendToLeftt(mainPlayerPacket);
+	                node.sendToRight(mainPlayerPacket);
+	                startDelay();
+	            }
+	            
             }
 
             @Override
@@ -147,6 +152,25 @@ public class MusicalChairGame {
             //    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         });
+    }
+    
+    public void startDelay() {
+    	Thread t = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				isAllowedToMove = false;
+				try {
+					Thread.sleep(150);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				isAllowedToMove = true;
+			}
+    		
+    	});
+    	t.start();
     }
     
     /*Update the opponent player : if the opponent name is not exists, set an empty
