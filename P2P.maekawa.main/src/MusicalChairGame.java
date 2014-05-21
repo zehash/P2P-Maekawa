@@ -93,6 +93,7 @@ public class MusicalChairGame {
     		readyStatus[i] = 0;
         setScreen();
         setListenerPlayer();
+        setListenerButton();
         setChairAppear();
     }
     
