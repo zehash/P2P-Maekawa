@@ -20,6 +20,8 @@ public class Server {
 	private Node node;
 	private NodePacket nodePacketRecv;
 	private NodePacket nodePacketSend;
+	private MessagePacket messagePacketRecv;
+	private MessagePacket messagePacketSend;
 	
 	/** Basic socket connection */
 	private Socket connection;
@@ -106,13 +108,29 @@ public class Server {
 	 * @throws IOException
 	 */
 	private void readyListen() throws IOException {
-		//sendMessage(message);
+		Object messageRecv;
 		do {
 			// Have a connection
 			try {
-				nodePacketRecv = (NodePacket) input.readObject(); // Read incomming stream
-				mcg.updatePlayer(nodePacketRecv);
-				mcg.node.sendToLeftt(nodePacketRecv);
+				messageRecv = input.readObject();
+				if (messageRecv instanceof NodePacket)
+				{
+					nodePacketRecv = (NodePacket) messageRecv; // Read incomming stream
+					mcg.updatePlayer(nodePacketRecv);
+					mcg.node.sendToLeft(nodePacketRecv);
+				}
+				else
+				{
+					if (messageRecv instanceof MessagePacket) {
+						messagePacketRecv = (MessagePacket) messageRecv;
+						if (messagePacketRecv.getMessage().equals("READY")) {
+							if (mcg.isGameDecisionMaker())
+								mcg.receiveReadyStatus(messagePacketRecv.getIP());
+							else
+								node.sendMessageLeft(messagePacketRecv);
+						}
+					}
+				}
 			} catch (ClassNotFoundException cnfException) {
 				System.out.println("\n User sent some corrupted data...");
 			}
@@ -126,6 +144,21 @@ public class Server {
 		if (output != null) {
 			try {
 				output.writeObject(playerPacket);
+				output.flush();
+				output.reset();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/*Sending a Message information to the connected node. The server can only send a message if
+	 * there is a client connection*/
+	public void sendMessage(MessagePacket messagePacket){
+		if (output != null) {
+			try {
+				output.writeObject(messagePacket);
 				output.flush();
 				output.reset();
 			} catch (IOException e) {

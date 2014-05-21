@@ -12,11 +12,14 @@ import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
@@ -24,11 +27,14 @@ public class MusicalChairGame {
     JFrame screenGame = new JFrame();
     JLabel timerlabel = new JLabel();
     JLabel gamestatus = new JLabel();
+    JButton startGame = new JButton();
+    
     Chair chair;
     int numOpponent = 0;
     int movement = 5;
     int initPlayerX = 0; 
     int initPlayerY = 0;
+    int[] readyStatus = new int[10];
 
     /**
      * @param args the command line arguments
@@ -40,6 +46,7 @@ public class MusicalChairGame {
     public static ArrayList<Player> opponents = new ArrayList<Player>();
     public Node node;
     public boolean isAllowedToMove = true;
+    public boolean isDecisionMaker = false;
     
     public MusicalChairGame() {
 	    try {
@@ -53,6 +60,8 @@ public class MusicalChairGame {
 	    }
 	}
     
+    /*Make this node as a decision maker*/
+    
     public void setScreen() {
         
         JLabel label = new JLabel();
@@ -62,11 +71,14 @@ public class MusicalChairGame {
         timerlabel.setText("0");
         timerlabel.setBounds(10, 320, 100, 20);
         gamestatus.setText("Game started..");
-        gamestatus.setBounds(300,320,100,20);
+        gamestatus.setBounds(300,310,100,20);
+        startGame.setText("Ready");
+        startGame.setBounds(300, 340, 100, 20);
         
         screenGame.getContentPane().add(label);
         screenGame.getContentPane().add(timerlabel);
         screenGame.getContentPane().add(gamestatus);
+        screenGame.getContentPane().add(startGame);
         
         
         screenGame.setSize(600,400);
@@ -77,6 +89,8 @@ public class MusicalChairGame {
     
     /*Initialize the game, by setting the arena, set the keyboard listener to player*/
     public void initGame() {
+    	for (int i = 0; i < 10; i++)
+    		readyStatus[i] = 0;
         setScreen();
         setListenerPlayer();
         setChairAppear();
@@ -140,7 +154,7 @@ public class MusicalChairGame {
                 mainplayer.repaint();
 	            if (isAllowedToMove) {
 	                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
-	                node.sendToLeftt(mainPlayerPacket);
+	                node.sendToLeft(mainPlayerPacket);
 	                node.sendToRight(mainPlayerPacket);
 	                startDelay();
 	            }
@@ -152,6 +166,70 @@ public class MusicalChairGame {
             //    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         });
+    }
+    
+    /*Button Listener*/
+    public void setListenerButton() {
+        startGame.addActionListener(new ActionListener()  {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				if (isDecisionMaker == false)
+				{
+					if (readyToPlay())
+					{
+						try {
+							MessagePacket message = new MessagePacket(InetAddress.getLocalHost().getHostAddress(), "START");
+							node.sendMessageRight(message);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				else
+				{
+					System.out.println("You are should send ready packet!");
+					try {
+						MessagePacket message = new MessagePacket(InetAddress.getLocalHost().getHostAddress(), "READY");
+						node.sendMessageLeft(message);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+            
+        });
+    }
+    
+    public boolean isGameDecisionMaker() {
+    	return isDecisionMaker;
+    }
+    
+    /*Decide this node as a game starter*/
+    public void asGameDecisionMaker() {
+    	isDecisionMaker = true;
+    	startGame.setText("Start Game");
+    	startGame.setEnabled(false);
+    	boolean isGameReady = readyToPlay();
+    }
+    
+    public void receiveReadyStatus(String IP)
+    {
+    	int found = getPlayerIndex(IP);
+    	readyStatus[found] = 1;
+    }
+    
+    /*Check if all other players are ready*/
+    public boolean readyToPlay()
+    {
+    	int count = 0;
+    	for (int i = 0; i < readyStatus.length; i++)
+    	{
+    		if (readyStatus[i] == 1)
+    			count++;
+    	}
+    	return (count == opponents.size());
     }
     
     public void startDelay() {
@@ -173,15 +251,20 @@ public class MusicalChairGame {
     	t.start();
     }
     
+    public int getPlayerIndex(String IP) {
+    	int found = -1;
+    	for (int i = 0; i < opponents.size(); i++) {
+    		if (opponents.get(i).name.equals(IP))
+    			found = i;
+    	}
+    	return found;
+    }
+    
     /*Update the opponent player : if the opponent name is not exists, set an empty
      * opponent as it is, else it will update the existing one
      */
     public void updatePlayer(NodePacket playerPacket) {
-    	int found = -1;
-    	for (int i = 0; i < opponents.size(); i++) {
-    		if (opponents.get(i).name.equals(playerPacket.getName()))
-    			found = i;
-    	}
+    	int found = getPlayerIndex(playerPacket.getName());
     	
     	if (found == -1) {
     		numOpponent++;
@@ -274,7 +357,7 @@ public class MusicalChairGame {
 			public void run() {
 				// TODO Auto-generated method stub
 				try {
-					node = new Node("192.168.2.5", mcg);
+					node = new Node("10.9.155.48", mcg);
 					node.startPeerDiscoveryConnection();
 				} catch (Exception e) {
 					e.printStackTrace();

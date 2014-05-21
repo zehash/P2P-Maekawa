@@ -173,12 +173,15 @@ public class Node extends JFrame {
 			try {
 				messageRecvPD = (PeerDiscoveryPacket) inputPD.readObject(); // Read incomming stream
 				showMessage("\n" + "IPAddress : "+messageRecvPD.getIP()+"Server : "+messageRecvPD.getServerStatus()+"Client : "+messageRecvPD.getClientStatus());
-				if (messageRecvPD.getPeerNumber() == 1) 
+				if (messageRecvPD.getPeerNumber() == 1)
+				{
 					neverBeClient = true;
+					mcg.asGameDecisionMaker();
+				}
 				if ((isConnectedAsClient == false) && (neverBeClient == false) && (messageRecvPD.getServerStatus() == true) && !(messageRecvPD.getIP().equals(Inet4Address.getLocalHost().getHostAddress())))
 					{
 					System.out.println("isConnectedAsClient : "+isConnectedAsClient+", Neverbeclient : "+neverBeClient+"Message IP : "+messageRecvPD.getIP()+", Packet PeerNumber : "+messageRecvPD.getPeerNumber());
-					leftConnector = new Client(messageRecvPD.getIP(), mcg);
+					leftConnector = new Client(messageRecvPD.getIP(), mcg, this);
 					
 						try {
 							Thread clientThread = new Thread(new Runnable() {
@@ -246,11 +249,25 @@ public class Node extends JFrame {
 			rightConnector.sendPlayer(playerPacket);
 		}
 	}
+	
+	/*Send MessagePacket from the server*/
+	public void sendMessageRight(MessagePacket messagePacket) {
+		if (rightConnector != null) {
+			rightConnector.sendMessage(messagePacket);
+		}
+	}
 
 	/*Send NodePacket from the client*/
-	public void sendToLeftt(NodePacket playerPacket) {
+	public void sendToLeft(NodePacket playerPacket) {
 		if (leftConnector != null) {
 			leftConnector.sendPlayer(playerPacket);
+		}
+	}
+	
+	/*Send MessagePacket from the server*/
+	public void sendMessageLeft(MessagePacket messagePacket) {
+		if (leftConnector != null) {
+			leftConnector.sendMessage(messagePacket);
 		}
 	}
 	

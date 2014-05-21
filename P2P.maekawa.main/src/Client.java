@@ -27,6 +27,7 @@ public class Client {
 	private ObjectInputStream input; // goes to you
 	private String message = "";
 	private String serverIP;
+	private Node node;
 	
 	/** Basic socket connection */
 	private Socket connection;
@@ -35,12 +36,14 @@ public class Client {
 	
 	private NodePacket nodePacketRecv;
 	private NodePacket nodePacketSend;
+	private MessagePacket messagePacketRecv;
 	
 	
 	// Constructor
-	public Client(String host, MusicalChairGame mcg) throws Exception {
+	public Client(String host, MusicalChairGame mcg, Node node) throws Exception {
 		serverIP = host;
 		this.mcg = mcg;
+		this.node = node;
 	}
 
 	/**
@@ -73,6 +76,20 @@ public class Client {
 		}
 		
 	}
+	
+	/*Sending a Message information to the server side*/
+	public void sendMessage(MessagePacket messagePacket){
+		if (output != null) {
+			try {
+				output.writeObject(messagePacket);
+				output.flush();
+				output.reset();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 
 	/**
 	 * Connect to a server if such a server is available.
@@ -103,12 +120,28 @@ public class Client {
 	 * @throws IOException
 	 */
 	private void readyListen() throws IOException {
+		Object messageRecv;
 		do {
 			// Have a connection
 			try {
-				nodePacketRecv = (NodePacket) input.readObject(); // Read incomming stream
-				mcg.updatePlayer(nodePacketRecv);
-				mcg.node.sendToRight(nodePacketRecv);
+				messageRecv = input.readObject();
+				if (messageRecv instanceof NodePacket)
+				{
+					nodePacketRecv = (NodePacket) messageRecv; // Read incomming stream
+					mcg.updatePlayer(nodePacketRecv);
+					mcg.node.sendToRight(nodePacketRecv);
+				}
+				else
+				{
+					if (messageRecv instanceof MessagePacket) {
+						messagePacketRecv = (MessagePacket) messageRecv;
+						if (messagePacketRecv.getMessage().equals("START"))
+						{
+							mcg.startTimer();
+							node.sendMessageRight(messagePacketRecv);
+						}
+					}
+				}
 			} catch (ClassNotFoundException cnfException) {
 				System.out.println("\nUser sent some corrupted data...");
 			}
