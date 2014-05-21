@@ -220,6 +220,10 @@ public class MusicalChairGame {
     {
     	int found = getPlayerIndex(IP);
     	readyStatus[found] = 1;
+    	if (readyToPlay())
+    	{
+    		startGame.setEnabled(true);
+    	}
     }
     
     /*Check if all other players are ready*/

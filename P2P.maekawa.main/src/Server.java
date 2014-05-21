@@ -128,6 +128,7 @@ public class Server {
 								mcg.receiveReadyStatus(messagePacketRecv.getIP());
 							else
 								node.sendMessageLeft(messagePacketRecv);
+							System.out.println("Receive Message");
 						}
 					}
 				}
