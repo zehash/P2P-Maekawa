@@ -182,6 +182,7 @@ public class MusicalChairGame {
 						try {
 							MessagePacket message = new MessagePacket(InetAddress.getLocalHost().getHostAddress(), "START");
 							node.sendMessageRight(message);
+							startTimer();
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
