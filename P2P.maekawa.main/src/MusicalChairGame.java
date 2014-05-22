@@ -191,10 +191,11 @@ public class MusicalChairGame {
 				}
 				else
 				{
-					System.out.println("You are should send ready packet!");
 					try {
 						MessagePacket message = new MessagePacket(InetAddress.getLocalHost().getHostAddress(), "READY");
 						node.sendMessageLeft(message);
+						startGame.setText("Waiting for others to be ready");
+						startGame.setEnabled(false);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -363,7 +364,7 @@ public class MusicalChairGame {
 			public void run() {
 				// TODO Auto-generated method stub
 				try {
-					node = new Node("10.9.155.48", mcg);
+					node = new Node("10.1.1.23", mcg);
 					node.startPeerDiscoveryConnection();
 				} catch (Exception e) {
 					e.printStackTrace();
