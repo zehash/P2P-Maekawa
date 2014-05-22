@@ -176,7 +176,7 @@ public class MusicalChairGame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				if (isDecisionMaker == false)
+				if (isDecisionMaker)
 				{
 					if (readyToPlay())
 					{
@@ -213,12 +213,12 @@ public class MusicalChairGame {
     	isDecisionMaker = true;
     	startGame.setText("Start Game");
     	startGame.setEnabled(false);
-    	boolean isGameReady = readyToPlay();
     }
     
     public void receiveReadyStatus(String IP)
     {
     	int found = getPlayerIndex(IP);
+    	System.out.println("Index : "+found);
     	readyStatus[found] = 1;
     	if (readyToPlay())
     	{
