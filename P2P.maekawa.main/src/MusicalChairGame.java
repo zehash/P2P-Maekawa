@@ -236,7 +236,7 @@ public class MusicalChairGame {
     		if (readyStatus[i] == 1)
     			count++;
     	}
-    	return (count == opponents.size());
+    	return (count == numOpponent);
     }
     
     public void startDelay() {

@@ -1,5 +1,7 @@
+import java.io.Serializable;
 
-public class MessagePacket {
+
+public class MessagePacket implements Serializable{
 
 	private String IP;
 	private String message;
