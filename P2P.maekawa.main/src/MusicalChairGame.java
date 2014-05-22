@@ -142,6 +142,7 @@ public class MusicalChairGame {
 
             @Override
             public void keyPressed(java.awt.event.KeyEvent e) {
+            	System.out.println("Keyboard is pressed!");
                 switch (e.getKeyChar()) {
                     case 'w' : mainplayer.movePosition(0, -movement, isAllowedToMove);
                                break;
@@ -184,6 +185,7 @@ public class MusicalChairGame {
 							MessagePacket message = new MessagePacket(InetAddress.getLocalHost().getHostAddress(), "START");
 							node.sendMessageRight(message);
 							startTimer();
+							setListenerPlayer();
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -196,6 +198,7 @@ public class MusicalChairGame {
 						node.sendMessageLeft(message);
 						startGame.setText("Waiting for others to be ready");
 						startGame.setEnabled(false);
+						setListenerPlayer();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
