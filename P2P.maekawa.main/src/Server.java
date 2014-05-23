@@ -86,6 +86,23 @@ public class Server {
 			}
 		}
 	}
+	
+	/*Send all chairs method is to send all of the chair information to the connected
+	 * node. 
+	 */
+	private void sendAllChairsInformation() {
+
+		for (int i = 0; i < mcg.chairs.size(); i++)
+		{
+			try {
+				nodePacketSend = new NodePacket("chair "+i, mcg.chairs.get(i).positionX, mcg.chairs.get(i).positionY);
+				sendChairInfo(nodePacketSend);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 
 	/*Setting up the streams*/
 	private void setupStreams() throws IOException {
@@ -99,6 +116,7 @@ public class Server {
 		nodePacketSend = new NodePacket(mcg.mainplayer.name, mcg.mainplayer.positionX, mcg.mainplayer.positionY);
 		sendPlayer(nodePacketSend);
 		sendAllOpponentsInformation();
+		sendAllChairsInformation();
 	}
 
 	/**
@@ -145,6 +163,21 @@ public class Server {
 		if (output != null) {
 			try {
 				output.writeObject(playerPacket);
+				output.flush();
+				output.reset();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/*Sending a chair information to the connected node. The server can only send a messge if
+	 * there is a client connection*/
+	public void sendChairInfo(NodePacket chairPacket){
+		if (output != null) {
+			try {
+				output.writeObject(chairPacket);
 				output.flush();
 				output.reset();
 			} catch (IOException e) {

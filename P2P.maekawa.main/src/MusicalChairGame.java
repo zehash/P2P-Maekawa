@@ -29,12 +29,14 @@ public class MusicalChairGame {
     JLabel gamestatus = new JLabel();
     JButton startGame = new JButton();
     
-    Chair chair;
     int numOpponent = 0;
     int movement = 5;
     int initPlayerX = 0; 
     int initPlayerY = 0;
     int[] readyStatus = new int[10];
+    //Mark X coordinate
+    int[][] marked = new int[600][300];
+    
 
     /**
      * @param args the command line arguments
@@ -44,12 +46,16 @@ public class MusicalChairGame {
     public Player mainplayer;
     public MusicalChairGame mcg = this;
     public static ArrayList<Player> opponents = new ArrayList<Player>();
+    public static ArrayList<Chair> chairs = new ArrayList<Chair>(10);
     public Node node;
     public boolean isAllowedToMove = true;
     public boolean isDecisionMaker = false;
     
     public MusicalChairGame() {
 	    try {
+	    	for (int i = 0; i < 600; i++)
+	    		for (int j = 0; j < 300; j++)
+	    			marked[i][j] = 0;
 	        screenGame.setLayout(null);
 	        arenaGame = new Arena(screenGame, 600,300);
 	        setInitPlayerPosition();
@@ -91,22 +97,36 @@ public class MusicalChairGame {
     public void initGame() {
     	for (int i = 0; i < 10; i++)
     		readyStatus[i] = 0;
+    	for (int i = 0; i < 10; i++)
+    		chairs.add(new Chair(1000,1000));
         setScreen();
         setListenerPlayer();
         setListenerButton();
-        setChairAppear();
     }
     
     /*Make the chair appear*/
     public void setChairAppear() {
-        Random randomGenerator = new Random();
-        int getX = 1;
-        while (getX % 5 != 0)
-            getX = randomGenerator.nextInt(600-40);
-        int getY = 1;
-        while (getY % 5 != 0)
-            getY = randomGenerator.nextInt(300-40);
-        chair = new Chair(getX, getY);
+    	Chair chair;
+    	boolean okey = false;
+    	for (int i = 0; i < 10; i++)
+    	{
+    		okey = false;
+    		while (!okey) {
+		        Random randomGenerator = new Random();
+		        int getX = 1;
+		        while (getX % 5 != 0)
+		            getX = randomGenerator.nextInt(600-40);
+		        int getY = 1;
+		        while (getY % 5 != 0)
+		            getY = randomGenerator.nextInt(300-40);
+		        if (marked[getX][getY] == 0) {
+		        	chair = new Chair(getX, getY);
+		        	chairs.set(i,chair);
+		        	marked[getX][getY] = 1;
+		        	okey = true;
+		        }
+    		}
+    	}
     }
     
     /*Initializing 10 empty opponents (Based on numberOpponentSlotCreated)*/
@@ -219,6 +239,7 @@ public class MusicalChairGame {
     	isDecisionMaker = true;
     	startGame.setText("Start Game");
     	startGame.setEnabled(false);
+    	setChairAppear();
     }
     
     public void receiveReadyStatus(String IP)
@@ -295,6 +316,13 @@ public class MusicalChairGame {
     	}
     }
     
+    /* Update the chair information
+     */
+    public void updateChair(NodePacket chairPacket) {
+    	int chairIndex = Integer.parseInt(chairPacket.getName().split(" ")[1]);
+    	chairs.set(chairIndex, new Chair(chairPacket.getPositionX(),chairPacket.getPositionY()));
+    }
+    
     /*Checking whether the object is overlap to each other*/
     public boolean isOverlap(Object obj1, Object obj2) {
         boolean overlap = false;
@@ -329,7 +357,8 @@ public class MusicalChairGame {
                 for (seconds = 15; seconds >= 0; seconds--) {
                     timerlabel.setText(""+seconds);
                     if (seconds == 5) {
-                        arenaGame.addChair(chair);
+                    	for (int i = 0; i < numOpponent+1; i++)
+                    		arenaGame.addChair(chairs.get(i));
                     }
                     try {
                         Thread.sleep(1000);
@@ -337,8 +366,12 @@ public class MusicalChairGame {
                         e.printStackTrace();
                     }
                 }
-                
-                if (isOverlap(mainplayer,chair)) {
+                boolean isWin = false;
+                for (int i = 0; i < numOpponent+1; i++) {
+                	if (isOverlap(mainplayer, chairs.get(i)))
+                		isWin  = true;
+                }
+                if (isWin) {
                     gamestatus.setText("Player Wins");
                 } else {
                     gamestatus.setText("Player Loses");

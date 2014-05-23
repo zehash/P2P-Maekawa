@@ -128,8 +128,14 @@ public class Client {
 				if (messageRecv instanceof NodePacket)
 				{
 					nodePacketRecv = (NodePacket) messageRecv; // Read incomming stream
-					mcg.updatePlayer(nodePacketRecv);
-					mcg.node.sendToRight(nodePacketRecv);
+					//Check if the packet is for chair information or player
+					if (nodePacketRecv.getName().indexOf("chair") > -1) {
+						mcg.updateChair(nodePacketRecv);
+					}
+					else {
+						mcg.updatePlayer(nodePacketRecv);
+						mcg.node.sendToRight(nodePacketRecv);
+					}
 				}
 				else
 				{

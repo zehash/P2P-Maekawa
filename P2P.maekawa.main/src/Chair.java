@@ -15,6 +15,7 @@ import java.awt.geom.Rectangle2D;
 
 public class Chair extends JComponent {
     
+	String index;
     int positionX;
     int positionY;
     
