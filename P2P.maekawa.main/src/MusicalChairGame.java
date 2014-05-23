@@ -34,7 +34,6 @@ public class MusicalChairGame {
     int initPlayerX = 0; 
     int initPlayerY = 0;
     int[] readyStatus = new int[10];
-    //Mark X coordinate
     int[][] marked = new int[600][300];
     
 
