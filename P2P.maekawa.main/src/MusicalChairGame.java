@@ -185,7 +185,9 @@ public class MusicalChairGame {
 							MessagePacket message = new MessagePacket(InetAddress.getLocalHost().getHostAddress(), "START");
 							node.sendMessageRight(message);
 							startTimer();
-							setListenerPlayer();
+							System.out.println("Game started!");
+							startGame.setEnabled(false);
+							startGame.setFocusable(false);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -367,7 +369,7 @@ public class MusicalChairGame {
 			public void run() {
 				// TODO Auto-generated method stub
 				try {
-					node = new Node("10.1.1.23", mcg);
+					node = new Node("192.168.2.5", mcg);
 					node.startPeerDiscoveryConnection();
 				} catch (Exception e) {
 					e.printStackTrace();

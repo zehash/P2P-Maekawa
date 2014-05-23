@@ -1,8 +1,8 @@
 import java.io.Serializable;
 
 
-public class MessagePacket implements Serializable{
-
+public class MessagePacket implements Serializable {
+	/*Jemie is Stupid*/
 	private String IP;
 	private String message;
 	

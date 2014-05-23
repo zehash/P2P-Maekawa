@@ -182,19 +182,5 @@ public class Server {
 			ioException.printStackTrace();
 		}
 	}
-
-	/**
-	 * This method sends the message to our peers or clients
-	 */
-	private void sendMessage(String message) {
-		try {
-			// Sends the message through the output stream
-			output.writeObject("SERVER - " + message);
-			output.flush();
-			System.out.println("\nSERVER - " + message);		
-		} catch (IOException ioexception) {
-			System.out.println("\nERROR: Message was not sent...\n");
-		}
-	}
 	
 }
