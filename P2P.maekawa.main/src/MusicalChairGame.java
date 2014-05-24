@@ -236,6 +236,7 @@ public class MusicalChairGame {
 	                    case 's' : mainplayer.movePosition(0, +movement, isAllowedToMove);
 	                               break;
 	                }
+	                mainplayer.repaint();
 	                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
                     mainPlayerPacket.setColor(mainplayer.color);
                     node.sendToLeft(mainPlayerPacket);
@@ -247,6 +248,7 @@ public class MusicalChairGame {
 		                {
 		                	if (isOverlap(mainplayer,chairs.get(i),false)) {
 		                		counterPlayerInChair++;
+		                		touching = true;
 		                	}
 		                }
 		                if (counterPlayerInChair == numOpponent+1) {
