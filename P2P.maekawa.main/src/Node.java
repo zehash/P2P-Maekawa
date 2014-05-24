@@ -545,4 +545,76 @@ public class Node extends JFrame {
     	//results
     	
     }
+    
+    //print small values
+    public void debugSmallValues() {
+        System.out.println("k : " + k);
+        System.out.println("myK : " + myK);
+        System.out.println("myIP : " + myIP);
+        
+    }
+    
+    //print myState
+    public void debugMyState() {
+        System.out.println("myState - IP: " + myState.getIP() + ", status: " + myState.getStatus() + ", chair: " + myState.getChair());
+    }
+    
+    //print myVotes
+    public void debugMyVotes() {
+        System.out.println("myVotes");
+        Iterator iter = myVotes.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry mEntry = (Map.Entry) iter.next();
+            System.out.println(mEntry.getKey() + " : " + mEntry.getValue());
+        }
+    }
+    
+    //print myVotes
+    public void debugMyVotes2() {
+        System.out.println("myVotes");
+        for (int key : myVotes.keySet() ) {
+            System.out.println(key);
+            Queue<String> q = myVotes.get(key);
+            for (String s : q) {
+                System.out.println(" " + s + " ");
+            }
+        }
+    }
+    
+    //print alreadyReleased values
+    public void debugAlreadyReleased() {
+        System.out.println("already released");
+        for (String s : alreadyReleased) {
+            System.out.println(" " + s + " ");
+        }
+    }
+    
+    //print alreadyVoted values
+    public void debugAlreadyVoted() {
+        System.out.println("already voted");
+        for (String s : alreadyVoted) {
+            System.out.println(" " + s + " ");
+        }
+    }
+    
+    //print whoVotedForMe values
+    public void debugWhoVotedForMe() {
+        System.out.println("who voted for me");
+        for (String s : whoVotedForMe) {
+            System.out.println(" " + s + " ");
+        }
+    }
+    
+    //print results
+    public void debugResults() {
+        System.out.println("results");
+        HashMap<Integer,Queue<String>> r = results.getHM();
+        for (int key : r.keySet() ) {
+            System.out.println(key);
+            Queue<String> q = r.get(key);
+            for (String s : q) {
+                System.out.println(" " + s + " ");
+            }
+        }
+    }
 }

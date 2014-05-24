@@ -500,6 +500,9 @@ public class MusicalChairGame {
                 }
                 count = node.results.countEveryoneInResults();
                 System.out.println("Last game result : "+count);
+                node.debugAlreadyReleased();
+                node.debugAlreadyVoted();
+                node.debugMyVotes();
                 node.results.printAllResults();
                 if (count != numOpponent+1) {
                     gamestatus.setText("draw");
