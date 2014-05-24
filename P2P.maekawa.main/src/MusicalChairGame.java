@@ -27,7 +27,7 @@ import may.State;
 import may.Vote;
 
 public class MusicalChairGame {
-	final String peerDiscoveryIP = "10.9.154.51";
+	final String peerDiscoveryIP = "10.9.187.131";
 	
     JFrame screenGame = new JFrame();
     JLabel timerlabel = new JLabel();
@@ -241,7 +241,7 @@ public class MusicalChairGame {
 		                boolean touching = false;
 		                for (int i= 0; i < numOpponent+1;i++)
 		                {
-		                	if (isOverlap(mainplayer,chairs.get(i))) {
+		                	if (isOverlap(mainplayer,chairs.get(i),false)) {
 		                		System.out.println("The player is touching chair no."+(i+1));
 		                	}
 		                }
@@ -362,13 +362,13 @@ public class MusicalChairGame {
     public void checkPlayersInChairs() {
         int count = 0;
         for (int i = 0; i < numOpponent+1; i++) {
-            if (isOverlap(mainplayer, chairs.get(i))) {
+            if (isOverlap(mainplayer, chairs.get(i),true)) {
                 count++;
             }
         }
         for (int i = 0; i < numOpponent+1; i++) {
             for (int j = 0; j < numOpponent-1; j++)
-                if (isOverlap(opponents.get(j), chairs.get(i))) {
+                if (isOverlap(opponents.get(j), chairs.get(i),true)) {
                     count++;
                 }
         }
@@ -411,7 +411,7 @@ public class MusicalChairGame {
     		opponents.set(found, updateOpponent);
     	}
     	
-    	checkPlayersInChairs();
+    	//checkPlayersInChairs();
     }
     
     /* Update the chair information
@@ -422,12 +422,12 @@ public class MusicalChairGame {
     }
     
     /*Checking whether the object is overlap to each other*/
-    public boolean isOverlap(Player obj1, Chair obj2) {
+    public boolean isOverlap(Player obj1, Chair obj2, boolean checking) {
     	Rectangle newBoundPlayer = new Rectangle(obj1.positionX, obj1.positionY, 20, 20);
     	Rectangle newBoundChair = new Rectangle(obj2.positionX, obj2.positionY, 20, 20);
     	boolean overlap = false;
         overlap = newBoundPlayer.intersects(newBoundChair);
-        if (overlap) {
+        if (overlap && !checking ) {
             isTouchingChair = true;
             node.iWantChair(Integer.parseInt(obj2.index));
         }
@@ -482,7 +482,7 @@ public class MusicalChairGame {
                         gameIsStarted = false;
                         boolean isWin = false;
                         for (int i = 0; i < numOpponent+1; i++) {
-                            if (isOverlap(mainplayer, chairs.get(i)))
+                            if (isOverlap(mainplayer, chairs.get(i),true))
                                 isWin  = true;
                         }
                         if (isWin) {
