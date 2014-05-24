@@ -246,6 +246,7 @@ public class MusicalChairGame {
 		                	}
 		                }
 	                }
+	                checkPlayersInChairs();
 		            if (isAllowedToMove) {
 		                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
 		                mainPlayerPacket.setColor(mainplayer.color);
@@ -409,6 +410,8 @@ public class MusicalChairGame {
     		updateOpponent.repaint();
     		opponents.set(found, updateOpponent);
     	}
+    	
+    	checkPlayersInChairs();
     }
     
     /* Update the chair information
