@@ -64,6 +64,10 @@ public class Node extends JFrame {
     public ArrayList<String> whoVotedForMe = new ArrayList<String>(); //nodes who sent vote to me
     public ResultsHM results = new ResultsHM();
     
+    /*
+    Getting a number of players : mcg.numOpponent+1
+    
+    */
 	
 	// Constructor
 	public Node(String host, MusicalChairGame mcg) throws Exception {
@@ -84,7 +88,6 @@ public class Node extends JFrame {
 		setVisible(true);
 		this.mcg = mcg;
 		packet = new PeerDiscoveryPacket(InetAddress.getLocalHost().getHostAddress(), 0, true, true);
-<<<<<<< HEAD
 		try {
             myIP = InetAddress.getLocalHost().getHostAddress();
         } catch (Exception e) {

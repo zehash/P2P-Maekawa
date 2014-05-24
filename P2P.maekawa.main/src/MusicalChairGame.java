@@ -277,7 +277,9 @@ public class MusicalChairGame {
 						try {
 							MessagePacket message = new MessagePacket(InetAddress.getLocalHost().getHostAddress(), "START");
 							node.sendMessageRight(message);
-							startTimer();
+							isChairAppear = true;
+	                        for (int i = 0; i < numOpponent+1; i++)
+	                            arenaGame.addChair(chairs.get(i));
 							System.out.println("Game started!");
 							startGame.setEnabled(false);
 							startGame.setFocusable(false);
@@ -357,6 +359,25 @@ public class MusicalChairGame {
     	t.start();
     }
     
+    public void checkPlayersInChairs() {
+        int count = 0;
+        for (int i = 0; i < numOpponent+1; i++) {
+            if (isOverlap(mainplayer, chairs.get(i))) {
+                count++;
+            }
+        }
+        for (int i = 0; i < numOpponent+1; i++) {
+            for (int j = 0; j < numOpponent-1; j++)
+                if (isOverlap(opponents.get(j), chairs.get(i))) {
+                    count++;
+                }
+        }
+        
+        if (count == numOpponent+1) {
+            startTimer();
+        }
+    }
+    
     public int getPlayerIndex(String IP) {
     	int found = -1;
     	for (int i = 0; i < opponents.size(); i++) {
@@ -399,27 +420,6 @@ public class MusicalChairGame {
     }
     
     /*Checking whether the object is overlap to each other*/
-   /* public boolean isOverlap(Object obj1, Object obj2) {
-        boolean overlap = false;
-        Point p1,p2;
-        
-        if (obj1 instanceof Player)
-            p1 = ((Player) obj1).getPosition();
-        else
-            p1 = ((Chair) obj1).getPosition();
-        if (obj2 instanceof Player)
-            p2 = ((Player) obj2).getPosition();
-        else
-            p2 = ((Chair) obj2).getPosition();
-        
-        if (p1.equals(p2)) {
-            overlap = true;
-        }
-        
-        return overlap;
-    }*/
-    
-    /*Checking whether the object is overlap to each other*/
     public boolean isOverlap(Player obj1, Chair obj2) {
     	Rectangle newBoundPlayer = new Rectangle(obj1.positionX, obj1.positionY, 20, 20);
     	Rectangle newBoundChair = new Rectangle(obj2.positionX, obj2.positionY, 20, 20);
@@ -447,9 +447,6 @@ public class MusicalChairGame {
                 for (seconds = 15; seconds >= 0; seconds--) {
                     timerlabel.setText(""+seconds);
                     if (seconds == 10) {
-                    	isChairAppear = true;
-                    	for (int i = 0; i < numOpponent+1; i++)
-                    		arenaGame.addChair(chairs.get(i));
                     }
                     try {
                         Thread.sleep(1000);
