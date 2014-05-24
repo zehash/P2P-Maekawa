@@ -1,10 +1,12 @@
 package may;
 
+import java.io.Serializable;
+
 /**
 *
 * @author Dan
 */
-public class Vote
+public class Vote implements Serializable
 {
     public String i;
     public String voteFor;

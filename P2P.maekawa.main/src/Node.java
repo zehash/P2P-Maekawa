@@ -84,6 +84,11 @@ public class Node extends JFrame {
 		setVisible(true);
 		this.mcg = mcg;
 		packet = new PeerDiscoveryPacket(InetAddress.getLocalHost().getHostAddress(), 0, true, true);
+		 try {
+	            myIP = InetAddress.getLocalHost().getHostAddress();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
 	}
 
 	/**
@@ -288,6 +293,13 @@ public class Node extends JFrame {
             rightConnector.sendState(state);
         }
     }
+    
+    /*Send Vote Packet from the server*/
+    public void sendVoteRight(Vote vote) {
+        if (rightConnector != null) {
+            rightConnector.sendVote(vote);
+        }
+    }
 
 	/*Send NodePacket from the client*/
 	public void sendToLeft(NodePacket playerPacket) {
@@ -307,6 +319,13 @@ public class Node extends JFrame {
     public void sendStateLeft(State state) {
         if (leftConnector != null) {
             leftConnector.sendState(state);
+        }
+    }
+    
+    /*Send Vote Packet from the client*/
+    public void sendVoteLeft(Vote vote) {
+        if (leftConnector != null) {
+            leftConnector.sendVote(vote);
         }
     }
 	
@@ -502,11 +521,7 @@ public class Node extends JFrame {
     
     //when voting round begins, call this method when i touch chair
     public void iWantChair(int chair) {
-        try {
-            myIP = InetAddress.getLocalHost().getHostAddress();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+       
         
     	myState = new State(myIP, 0, chair);
     	updateMyState(0);
