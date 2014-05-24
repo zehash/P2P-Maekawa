@@ -8,12 +8,22 @@ import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+
+import may.ResultsHM;
+import may.State;
+import may.Vote;
 
 /*Node Class is responsible to give the program a property as a node in P2P application
  * The node will handle a connection from a Peer Discovery, Server, and Client
@@ -298,6 +308,4 @@ public class Node extends JFrame {
 				}
 		);
 	}
-
-	
 }

@@ -11,7 +11,7 @@
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
 import java.awt.Color;
-import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
@@ -23,8 +23,11 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import may.State;
+import may.Vote;
+
 public class MusicalChairGame {
-	final String peerDiscoveryIP = "10.9.147.84";
+	final String peerDiscoveryIP = "10.9.154.51";
 	
     JFrame screenGame = new JFrame();
     JLabel timerlabel = new JLabel();
@@ -53,6 +56,11 @@ public class MusicalChairGame {
     public boolean isAllowedToMove = true;
     public boolean isDecisionMaker = false;
     public boolean isMainPlayerCreated = false;
+    public boolean isChairAppear = false;
+    public boolean isTouchingChair = false; //To immobilize the player
+    public boolean gameIsStarted = false;
+    Vote vote;
+    State state;
     
     public MusicalChairGame() {
 	    try {
@@ -215,25 +223,36 @@ public class MusicalChairGame {
 
             @Override
             public void keyPressed(java.awt.event.KeyEvent e) {
-            	System.out.println("Keyboard is pressed!");
-                switch (e.getKeyChar()) {
-                    case 'w' : mainplayer.movePosition(0, -movement, isAllowedToMove);
-                               break;
-                    case 'a' : mainplayer.movePosition(-movement, 0, isAllowedToMove);
-                               break;
-                    case 'd' : mainplayer.movePosition(+movement, 0, isAllowedToMove);
-                               break;
-                    case 's' : mainplayer.movePosition(0, +movement, isAllowedToMove);
-                               break;
-                }
-                mainplayer.repaint();
-	            if (isAllowedToMove) {
-	                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
-	                mainPlayerPacket.setColor(mainplayer.color);
-	                node.sendToLeft(mainPlayerPacket);
-	                node.sendToRight(mainPlayerPacket);
-	                startDelay();
-	            }
+            	if (isTouchingChair == false) {
+	                switch (e.getKeyChar()) {
+	                    case 'w' : mainplayer.movePosition(0, -movement, isAllowedToMove);
+	                               break;
+	                    case 'a' : mainplayer.movePosition(-movement, 0, isAllowedToMove);
+	                               break;
+	                    case 'd' : mainplayer.movePosition(+movement, 0, isAllowedToMove);
+	                               break;
+	                    case 's' : mainplayer.movePosition(0, +movement, isAllowedToMove);
+	                               break;
+	                }
+	                mainplayer.repaint();
+	                /*Checking whether the main player is touching the chair*/
+	                if (isChairAppear) {
+		                boolean touching = false;
+		                for (int i= 0; i < numOpponent+1;i++)
+		                {
+		                	if (isOverlap(mainplayer,chairs.get(i))) {
+		                		System.out.println("The player is touching chair no."+(i+1));
+		                	}
+		                }
+	                }
+		            if (isAllowedToMove) {
+		                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
+		                mainPlayerPacket.setColor(mainplayer.color);
+		                node.sendToLeft(mainPlayerPacket);
+		                node.sendToRight(mainPlayerPacket);
+		                startDelay();
+		            }
+            	}
 	            
             }
 
@@ -376,11 +395,11 @@ public class MusicalChairGame {
      */
     public void updateChair(NodePacket chairPacket) {
     	int chairIndex = Integer.parseInt(chairPacket.getName().split(" ")[1]);
-    	chairs.set(chairIndex, new Chair(chairPacket.getPositionX(),chairPacket.getPositionY()));
+    	chairs.set(chairIndex, new Chair(chairIndex+"",chairPacket.getPositionX(),chairPacket.getPositionY()));
     }
     
     /*Checking whether the object is overlap to each other*/
-    public boolean isOverlap(Object obj1, Object obj2) {
+   /* public boolean isOverlap(Object obj1, Object obj2) {
         boolean overlap = false;
         Point p1,p2;
         
@@ -398,12 +417,23 @@ public class MusicalChairGame {
         }
         
         return overlap;
+    }*/
+    
+    /*Checking whether the object is overlap to each other*/
+    public boolean isOverlap(Player obj1, Chair obj2) {
+    	Rectangle newBoundPlayer = new Rectangle(obj1.positionX, obj1.positionY, 20, 20);
+    	Rectangle newBoundChair = new Rectangle(obj2.positionX, obj2.positionY, 20, 20);
+    	boolean overlap = false;
+        overlap = newBoundPlayer.intersects(newBoundChair);
+        if (overlap) isTouchingChair = true;
+        return overlap;
     }
     
     /*Timer of the game. when the seconds are 5 seconds left, the chair will appear
      * 
      */
     public void startTimer() {
+    	gameIsStarted= true;
         Thread t;
         t = new Thread(new Runnable() {
 
@@ -412,7 +442,8 @@ public class MusicalChairGame {
                 int seconds = 0;
                 for (seconds = 15; seconds >= 0; seconds--) {
                     timerlabel.setText(""+seconds);
-                    if (seconds == 5) {
+                    if (seconds == 10) {
+                    	isChairAppear = true;
                     	for (int i = 0; i < numOpponent+1; i++)
                     		arenaGame.addChair(chairs.get(i));
                     }
@@ -422,6 +453,7 @@ public class MusicalChairGame {
                         e.printStackTrace();
                     }
                 }
+                gameIsStarted = false;
                 boolean isWin = false;
                 for (int i = 0; i < numOpponent+1; i++) {
                 	if (isOverlap(mainplayer, chairs.get(i)))
@@ -477,6 +509,7 @@ public class MusicalChairGame {
         MusicalChairGame mcg = new MusicalChairGame();
         mcg.initGame();
         mcg.startNode();
+        mcg.startTimer();
     }
     
 }

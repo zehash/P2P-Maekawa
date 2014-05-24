@@ -24,6 +24,12 @@ public class Chair extends JComponent {
         this.positionY = positionY;
     }
     
+    public Chair(String index,int positionX, int positionY) {
+    	this.index = index;
+        this.positionX = positionX;
+        this.positionY = positionY;
+    }
+    
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
