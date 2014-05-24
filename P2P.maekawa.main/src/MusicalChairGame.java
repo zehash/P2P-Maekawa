@@ -32,6 +32,7 @@ public class MusicalChairGame {
     JFrame screenGame = new JFrame();
     JLabel timerlabel = new JLabel();
     JLabel gamestatus = new JLabel();
+    JLabel label = new JLabel();
     JLabel playerLabel = new JLabel();
     JButton startGame = new JButton();
     
@@ -132,7 +133,7 @@ public class MusicalChairGame {
     
     public void setScreen() {
         
-        JLabel label = new JLabel();
+        label = new JLabel();
         label.setText("TIMER :");
         label.setBounds(10, 300, 50, 20);
  
@@ -277,9 +278,7 @@ public class MusicalChairGame {
 						try {
 							MessagePacket message = new MessagePacket(InetAddress.getLocalHost().getHostAddress(), "START");
 							node.sendMessageRight(message);
-							isChairAppear = true;
-	                        for (int i = 0; i < numOpponent+1; i++)
-	                            arenaGame.addChair(chairs.get(i));
+							startTimer();
 							System.out.println("Game started!");
 							startGame.setEnabled(false);
 							startGame.setFocusable(false);
@@ -374,7 +373,7 @@ public class MusicalChairGame {
         }
         
         if (count == numOpponent+1) {
-            startTimer();
+            startTimerResult();
         }
     }
     
@@ -444,9 +443,12 @@ public class MusicalChairGame {
             @Override
             public void run() {
                 int seconds = 0;
-                for (seconds = 15; seconds >= 0; seconds--) {
+                for (seconds = 5; seconds >= 0; seconds--) {
                     timerlabel.setText(""+seconds);
-                    if (seconds == 10) {
+                    if (seconds == 0) {
+                        isChairAppear = true;
+                        for (int i = 0; i < numOpponent+1; i++)
+                            arenaGame.addChair(chairs.get(i));
                     }
                     try {
                         Thread.sleep(1000);
@@ -454,16 +456,43 @@ public class MusicalChairGame {
                         e.printStackTrace();
                     }
                 }
-                gameIsStarted = false;
-                boolean isWin = false;
-                for (int i = 0; i < numOpponent+1; i++) {
-                	if (isOverlap(mainplayer, chairs.get(i)))
-                		isWin  = true;
-                }
-                if (isWin) {
-                    gamestatus.setText("Player Wins");
-                } else {
-                    gamestatus.setText("Player Loses");
+            }
+        },"timer"
+        );
+        t.start();
+    }
+    
+    /*Timer of the game. when the seconds are 5 seconds left, the chair will appear
+     * 
+     */
+    public void startTimerResult() {
+        label.setText("Time to calculate result : ");
+        Thread t;
+        t = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                int seconds = 0;
+                for (seconds = 5; seconds >= 0; seconds--) {
+                    timerlabel.setText(""+seconds);
+                    if (seconds == 0) {
+                        gameIsStarted = false;
+                        boolean isWin = false;
+                        for (int i = 0; i < numOpponent+1; i++) {
+                            if (isOverlap(mainplayer, chairs.get(i)))
+                                isWin  = true;
+                        }
+                        if (isWin) {
+                            gamestatus.setText("Player Wins");
+                        } else {
+                            gamestatus.setText("Player Loses");
+                        }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         },"timer"
