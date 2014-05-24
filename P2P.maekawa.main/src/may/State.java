@@ -1,10 +1,12 @@
 package may;
 
+import java.io.Serializable;
+
 /**
 *
 * @author Dan
 */
-public class State
+public class State implements Serializable
 {
     String ip;
     Integer status;

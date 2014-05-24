@@ -1,8 +1,4 @@
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,11 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
 import java.net.Socket;
 
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import may.State;
 
 /* Client class is responsible for being a client and implements client activity,
  * starts from opening a connection to connect to a waiting server.
@@ -90,6 +82,20 @@ public class Client {
 			}
 		}
 	}
+	
+	/*Sending a State information to the server side*/
+    public void sendState(State state){
+        if (output != null) {
+            try {
+                output.writeObject(state);
+                output.flush();
+                output.reset();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
 	/**
 	 * Connect to a server if such a server is available.
@@ -147,6 +153,12 @@ public class Client {
 							mcg.startTimer();
 							node.sendMessageRight(messagePacketRecv);
 						}
+					}
+					else {
+					    if (messageRecv instanceof State) {
+					        State incoming_state = (State) messageRecv;
+					        System.out.println("Incoming state from : "+incoming_state.getIP());
+					    }
 					}
 				}
 			} catch (ClassNotFoundException cnfException) {

@@ -160,7 +160,7 @@ public class MusicalChairGame {
     	for (int i = 0; i < 10; i++)
     		readyStatus[i] = 0;
     	for (int i = 0; i < 10; i++)
-    		chairs.add(new Chair(1000,1000));
+    		chairs.add(new Chair(i+"", 1000,1000));
         setScreen();
         setListenerButton();
     }
@@ -181,7 +181,7 @@ public class MusicalChairGame {
 		        while (getY % 5 != 0)
 		            getY = randomGenerator.nextInt(300-40);
 		        if (marked[getX][getY] == 0) {
-		        	chair = new Chair(getX, getY);
+		        	chair = new Chair(""+i,getX, getY);
 		        	chairs.set(i,chair);
 		        	marked[getX][getY] = 1;
 		        	okey = true;
@@ -425,7 +425,10 @@ public class MusicalChairGame {
     	Rectangle newBoundChair = new Rectangle(obj2.positionX, obj2.positionY, 20, 20);
     	boolean overlap = false;
         overlap = newBoundPlayer.intersects(newBoundChair);
-        if (overlap) isTouchingChair = true;
+        if (overlap) {
+            isTouchingChair = true;
+            node.iWantChair(Integer.parseInt(obj2.index));
+        }
         return overlap;
     }
     

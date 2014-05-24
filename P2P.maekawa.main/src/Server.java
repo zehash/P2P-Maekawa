@@ -1,10 +1,12 @@
 
-import java.io.*;
-import java.net.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 
-import javax.swing.*;
+import may.State;
 
 /*Server class is responsible for being a server and implements server activity,
  * starts from opening a connection and waiting the connection to wait.
@@ -151,6 +153,12 @@ public class Server {
 							System.out.println("Receive Message");
 						}
 					}
+					else {
+                        if (messageRecv instanceof State) {
+                            State incoming_state = (State) messageRecv;
+                            System.out.println("Incoming state from : "+incoming_state.getIP());
+                        }
+                    }
 				}
 			} catch (ClassNotFoundException cnfException) {
 				System.out.println("\n User sent some corrupted data...");
@@ -203,6 +211,21 @@ public class Server {
 			}
 		}
 	}
+	
+	/*Sending a State information to the connected node. The server can only send a message if
+     * there is a client connection*/
+    public void sendState(State state){
+        if (output != null) {
+            try {
+                output.writeObject(state);
+                output.flush();
+                output.reset();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
 	/**
 	 * Close streams and sockets after the connection is cut

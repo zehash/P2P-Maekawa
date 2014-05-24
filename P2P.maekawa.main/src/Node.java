@@ -68,6 +68,7 @@ public class Node extends JFrame {
     public String myIP; //my ip address
     public ArrayList<String> whoVotedForMe = new ArrayList<String>(); //nodes who sent vote to me
     public ResultsHM results = new ResultsHM();
+    
 	
 	// Constructor
 	public Node(String host, MusicalChairGame mcg) throws Exception {
@@ -285,6 +286,13 @@ public class Node extends JFrame {
 			rightConnector.sendMessage(messagePacket);
 		}
 	}
+	
+	/*Send State Packet from the server*/
+    public void sendStateRight(State state) {
+        if (rightConnector != null) {
+            rightConnector.sendState(state);
+        }
+    }
 
 	/*Send NodePacket from the client*/
 	public void sendToLeft(NodePacket playerPacket) {
@@ -293,12 +301,19 @@ public class Node extends JFrame {
 		}
 	}
 	
-	/*Send MessagePacket from the server*/
+	/*Send MessagePacket from the client*/
 	public void sendMessageLeft(MessagePacket messagePacket) {
 		if (leftConnector != null) {
 			leftConnector.sendMessage(messagePacket);
 		}
 	}
+	
+	/*Send State Packet from the client*/
+    public void sendStateLeft(State state) {
+        if (leftConnector != null) {
+            leftConnector.sendState(state);
+        }
+    }
 	
 	/**
 	 * Display messages in the GUI for the user to see.
@@ -481,11 +496,18 @@ public class Node extends JFrame {
     
     //send state to neighbours
     public void sendState(State state) {
-    	//TODO send state through CORD
+    	leftConnector.sendState(state);
+    	rightConnector.sendState(state);
     }
     
     //when voting round begins, call this method when i touch chair
     public void iWantChair(int chair) {
+        try {
+            myIP = InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
     	myState = new State(myIP, 0, chair);
     	updateMyState(0);
     	sendState(myState);
