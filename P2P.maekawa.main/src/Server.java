@@ -140,7 +140,7 @@ public class Server {
 				{
 					nodePacketRecv = (NodePacket) messageRecv; // Read incomming stream
 					mcg.updatePlayer(nodePacketRecv);
-					mcg.node.sendToLeft(nodePacketRecv);
+					node.sendToLeft(nodePacketRecv);
 				}
 				else
 				{
@@ -159,12 +159,14 @@ public class Server {
                             State incoming_state = (State) messageRecv;
                             //System.out.println("Incoming state from : "+incoming_state.getIP());
                             node.receiveNeighbourState(incoming_state);
+                            node.sendStateLeft(incoming_state);
                         }
                         else {
                             if (messageRecv instanceof Vote) {
                                 Vote incoming_vote = (Vote) messageRecv;
                                 //System.out.println("Incoming state from : "+incoming_state.getIP());
                                 node.receiveVote(incoming_vote);
+                                node.sendVoteLeft(incoming_vote);
                             }
                         }
                     }

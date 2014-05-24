@@ -174,12 +174,14 @@ public class Client {
 					        State incoming_state = (State) messageRecv;
 					        //System.out.println("Incoming state from : "+incoming_state.getIP());
 					        node.receiveNeighbourState(incoming_state);
+					        node.sendStateRight(incoming_state);
 					    }
 					    else {
 					        if (messageRecv instanceof Vote) {
                                 Vote incoming_vote = (Vote) messageRecv;
                                 //System.out.println("Incoming state from : "+incoming_state.getIP());
                                 node.receiveVote(incoming_vote);
+                                node.sendVoteRight(incoming_vote);
 					        }
 					    }
 					}
