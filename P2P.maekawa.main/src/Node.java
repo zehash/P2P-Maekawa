@@ -30,11 +30,6 @@ import may.Vote;
  * Server and Client will run on different Threads
  */
 
-//TODO get k value
-//TODO remove k = 2
-//TODO does receiving state/votes need multithreading
-//
-
 public class Node extends JFrame {
 
 	private JTextField userText;
@@ -63,7 +58,7 @@ public class Node extends JFrame {
     public HashMap<Integer,Queue<String>> myVotes = new HashMap<Integer,Queue<String>>();
     public ArrayList<String> alreadyReleased = new ArrayList<String>(); //nodes ive already received release state confirmation from
     public ArrayList<String> alreadyVoted = new ArrayList<String>(); //nodes ive already voted for
-    public int k = 2; //number of votes required to win chair
+    public int k; //number of votes required to win chair
     public int myK = 0; //my votes received
     public String myIP; //my ip address
     public ArrayList<String> whoVotedForMe = new ArrayList<String>(); //nodes who sent vote to me
@@ -339,14 +334,12 @@ public class Node extends JFrame {
 		);
 	}
 	
+	public void setK() {
+	    k = ((mcg.numOpponent+1)/2)+1;
+	}
+	
 	/////////////////////////////
-	//TODO get node ip
-    //set a fake ip
-    public void debugSetMyIP(String myIP) {
-    	this.myIP = myIP;
-    }
     
-    //TODO connect receiveState to CORD
     //check if a neighbour [wants || has released] chair
     public void receiveNeighbourState(State state) {
     	int status = state.getStatus();
@@ -456,11 +449,15 @@ public class Node extends JFrame {
     	}
     	else {
     		Vote vote = new Vote(myIP, ip, chair);
-    		//TODO vote send to everyone through CORD
+    		if (leftConnector != null) {
+    		    leftConnector.sendVote(vote);
+    		}
+    		if (rightConnector != null) {
+                rightConnector.sendVote(vote);
+            }
     	}
     }
     
-    //TODO connect receive vote to CORD
     //receive vote from neighbour
     public void receiveVote(Vote vote) {
     	String whoVoted = vote.getI();

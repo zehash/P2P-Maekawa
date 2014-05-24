@@ -436,6 +436,7 @@ public class MusicalChairGame {
      * 
      */
     public void startTimer() {
+        node.setK();
     	gameIsStarted= true;
         Thread t;
         t = new Thread(new Runnable() {

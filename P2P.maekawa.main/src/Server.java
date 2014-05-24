@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import may.State;
+import may.Vote;
 
 /*Server class is responsible for being a server and implements server activity,
  * starts from opening a connection and waiting the connection to wait.
@@ -159,6 +160,13 @@ public class Server {
                             //System.out.println("Incoming state from : "+incoming_state.getIP());
                             node.receiveNeighbourState(incoming_state);
                         }
+                        else {
+                            if (messageRecv instanceof Vote) {
+                                Vote incoming_vote = (Vote) messageRecv;
+                                //System.out.println("Incoming state from : "+incoming_state.getIP());
+                                node.receiveVote(incoming_vote);
+                            }
+                        }
                     }
 				}
 			} catch (ClassNotFoundException cnfException) {
@@ -219,6 +227,21 @@ public class Server {
         if (output != null) {
             try {
                 output.writeObject(state);
+                output.flush();
+                output.reset();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    /* Sending a Vote information to the connected node. The server can only send a message if
+     * there is a client connection*/
+    public void sendVote(Vote vote){
+        if (output != null) {
+            try {
+                output.writeObject(vote);
                 output.flush();
                 output.reset();
             } catch (IOException e) {

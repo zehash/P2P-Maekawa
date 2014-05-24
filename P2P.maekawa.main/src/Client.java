@@ -7,6 +7,7 @@ import java.net.Inet4Address;
 import java.net.Socket;
 
 import may.State;
+import may.Vote;
 
 /* Client class is responsible for being a client and implements client activity,
  * starts from opening a connection to connect to a waiting server.
@@ -96,6 +97,20 @@ public class Client {
             }
         }
     }
+    
+    /*Sending a Vote information to the server side*/
+    public void sendVote(Vote vote){
+        if (output != null) {
+            try {
+                output.writeObject(vote);
+                output.flush();
+                output.reset();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
 	/**
 	 * Connect to a server if such a server is available.
@@ -159,6 +174,13 @@ public class Client {
 					        State incoming_state = (State) messageRecv;
 					        //System.out.println("Incoming state from : "+incoming_state.getIP());
 					        node.receiveNeighbourState(incoming_state);
+					    }
+					    else {
+					        if (messageRecv instanceof Vote) {
+                                Vote incoming_vote = (Vote) messageRecv;
+                                //System.out.println("Incoming state from : "+incoming_state.getIP());
+                                node.receiveVote(incoming_vote);
+					        }
 					    }
 					}
 				}
