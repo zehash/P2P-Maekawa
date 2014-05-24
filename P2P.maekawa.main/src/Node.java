@@ -513,6 +513,7 @@ public class Node extends JFrame {
     public void updateMyState(int status) {
     	myState.setStatus(status);
     	receiveNeighbourState(myState); //vote for self if necessary
+    	sendState(myState);
     	
     }
     
@@ -528,7 +529,6 @@ public class Node extends JFrame {
     public void iWantChair(int chair) {
     	myState = new State(myIP, 0, chair);
     	updateMyState(0);
-    	sendState(myState);
     }
     
     //TODO tidy
