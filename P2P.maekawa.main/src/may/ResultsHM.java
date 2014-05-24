@@ -80,6 +80,15 @@ public class ResultsHM {
         return winners;
     }
     
+    public void printAllResults() {
+        for (Integer key : hm.keySet()) {
+            Queue<String> q = hm.get(key);
+            for (String s : q) {
+                System.out.println(s);
+            }
+        }
+    }
+    
     public static void main(String args[]) {
     	new ResultsHM();
     }

@@ -42,6 +42,7 @@ public class MusicalChairGame {
     int initPlayerY = 0;
     int[] readyStatus = new int[10];
     int[][] marked = new int[600][300];
+    int counterPlayerInChair = 0;
     
 
     /**
@@ -245,12 +246,14 @@ public class MusicalChairGame {
 		                for (int i= 0; i < numOpponent+1;i++)
 		                {
 		                	if (isOverlap(mainplayer,chairs.get(i),false)) {
-		                		System.out.println("The player is touching chair no."+(i+1));
+		                		counterPlayerInChair++;
 		                	}
+		                }
+		                if (counterPlayerInChair == numOpponent+1) {
+		                    startTimerResult();
 		                }
 	                }
 		            if (isAllowedToMove) {
-		                checkPlayersInChairs();
 		                startDelay();
 		            }
             	}
@@ -392,10 +395,11 @@ public class MusicalChairGame {
      */
     public void updatePlayer(NodePacket playerPacket) {
     	int found = getPlayerIndex(playerPacket.getName());
+    	Player updateOpponent;
     	
     	if (found == -1) {
     		numOpponent++;
-    		Player updateOpponent = opponents.get(numOpponent-1);
+    		updateOpponent = opponents.get(numOpponent-1);
     		updateOpponent.name = new String(playerPacket.getName());
     		updateOpponent.color = playerPacket.getColor();
     		updateOpponent.positionX = playerPacket.getPositionX();
@@ -403,7 +407,7 @@ public class MusicalChairGame {
     		updateOpponent.repaint();
     		opponents.set(numOpponent-1, updateOpponent);
     	} else {
-    		Player updateOpponent = opponents.get(found);
+    		updateOpponent = opponents.get(found);
     		updateOpponent.color = playerPacket.getColor();
     		updateOpponent.positionX = playerPacket.getPositionX();
     		updateOpponent.positionY = playerPacket.getPositionY();
@@ -411,7 +415,14 @@ public class MusicalChairGame {
     		opponents.set(found, updateOpponent);
     	}
     	
-    	checkPlayersInChairs();
+    	for (int i = 0; i < numOpponent+1; i++)
+    	{
+    	    if (isOverlap(updateOpponent,chairs.get(i),true))
+    	        counterPlayerInChair++;
+    	}
+    	if (counterPlayerInChair == numOpponent+1) {
+            startTimerResult();
+        }
     }
     
     /* Update the chair information
@@ -487,6 +498,7 @@ public class MusicalChairGame {
                 }
                 count = node.results.countEveryoneInResults();
                 System.out.println("Last game result : "+count);
+                node.results.printAllResults();
                 if (count != numOpponent+1) {
                     gamestatus.setText("draw");
                 }
