@@ -79,6 +79,7 @@ public class Server {
 		{
 			try {
 				nodePacketSend = new NodePacket(mcg.opponents.get(i).name, mcg.opponents.get(i).positionX, mcg.opponents.get(i).positionY);
+				nodePacketSend.setColor(mcg.opponents.get(i).color);
 				sendPlayer(nodePacketSend);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -114,6 +115,7 @@ public class Server {
 		// No need to flush (Other PC does that)
 		System.out.println("\nStreams are now setup \n");
 		nodePacketSend = new NodePacket(mcg.mainplayer.name, mcg.mainplayer.positionX, mcg.mainplayer.positionY);
+		nodePacketSend.setColor(mcg.mainplayer.color);
 		sendPlayer(nodePacketSend);
 		sendAllOpponentsInformation();
 		sendAllChairsInformation();

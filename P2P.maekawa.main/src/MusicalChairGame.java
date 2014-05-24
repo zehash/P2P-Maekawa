@@ -356,12 +356,14 @@ public class MusicalChairGame {
     		numOpponent++;
     		Player updateOpponent = opponents.get(numOpponent-1);
     		updateOpponent.name = new String(playerPacket.getName());
+    		updateOpponent.color = playerPacket.getColor();
     		updateOpponent.positionX = playerPacket.getPositionX();
     		updateOpponent.positionY = playerPacket.getPositionY();
     		updateOpponent.repaint();
     		opponents.set(numOpponent-1, updateOpponent);
     	} else {
     		Player updateOpponent = opponents.get(found);
+    		updateOpponent.color = playerPacket.getColor();
     		updateOpponent.positionX = playerPacket.getPositionX();
     		updateOpponent.positionY = playerPacket.getPositionY();
     		updateOpponent.repaint();

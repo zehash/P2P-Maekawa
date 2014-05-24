@@ -110,6 +110,7 @@ public class Client {
 		// No need to flush (Other PC does that)
 		System.out.println("\nStreams are now setup \n");
 		nodePacketSend = new NodePacket(mcg.mainplayer.name, mcg.mainplayer.positionX, mcg.mainplayer.positionY);
+		nodePacketSend.setColor(mcg.mainplayer.color);
 		sendPlayer(nodePacketSend);
 	}
 	
