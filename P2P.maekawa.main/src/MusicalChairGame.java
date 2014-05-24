@@ -24,9 +24,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 public class MusicalChairGame {
+	final String peerDiscoveryIP = "10.9.147.84";
+	
     JFrame screenGame = new JFrame();
     JLabel timerlabel = new JLabel();
     JLabel gamestatus = new JLabel();
+    JLabel playerLabel = new JLabel();
     JButton startGame = new JButton();
     
     int numOpponent = 0;
@@ -49,6 +52,7 @@ public class MusicalChairGame {
     public Node node;
     public boolean isAllowedToMove = true;
     public boolean isDecisionMaker = false;
+    public boolean isMainPlayerCreated = false;
     
     public MusicalChairGame() {
 	    try {
@@ -57,13 +61,64 @@ public class MusicalChairGame {
 	    			marked[i][j] = 0;
 	        screenGame.setLayout(null);
 	        arenaGame = new Arena(screenGame, 600,300);
-	        setInitPlayerPosition();
-	        mainplayer = new Player(Color.RED, initPlayerX,initPlayerY);
-	        mainplayer.name = InetAddress.getLocalHost().getHostAddress();
 	    } catch (Exception e) {
 	    	e.printStackTrace();
 	    }
 	}
+    
+    /* This method will create mainplayer with its own color, then launch the game*/
+    public void createMainPlayer(Color inColor) {
+    	try {
+    		setInitPlayerPosition();
+    		mainplayer = new Player(inColor, initPlayerX,initPlayerY);
+    		mainplayer.name = InetAddress.getLocalHost().getHostAddress();
+            setListenerPlayer();
+    		launchGame();
+    		
+    		JLabel label = new JLabel();
+    		label.setText("You are : ");
+    		label.setBounds(10, 340, 100, 20);
+    		playerLabel.setBackground(inColor);
+    		playerLabel.setOpaque(true);
+    		playerLabel.setBounds(80, 340, 100, 20);
+    		
+    		screenGame.add(label); 
+    		screenGame.add(playerLabel);
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	isMainPlayerCreated = true;
+    }
+    
+    public Color setPlayerColor(int index) {
+    	Color playerColor = Color.RED;
+    	
+    	switch(index) {
+    	case 0 : playerColor = Color.RED;
+    			 break;
+    	case 1 : playerColor = Color.BLACK;
+		   		 break;
+    	case 2 : playerColor = Color.BLUE;
+  		 		 break;
+    	case 3 : playerColor = Color.YELLOW;
+  		 		 break;
+    	case 4 : playerColor = Color.CYAN;
+  		 		 break;
+    	case 5 : playerColor = Color.DARK_GRAY;
+  		 		 break;
+    	case 6 : playerColor = Color.LIGHT_GRAY;
+  		 		 break;
+    	case 7 : playerColor = Color.MAGENTA;
+	 		     break;
+    	case 8 : playerColor = Color.ORANGE;
+	 		     break;
+    	case 9 : playerColor = Color.PINK;
+	 		 	 break;
+    	}
+    	
+    	return playerColor;
+    }
     
     /*Make this node as a decision maker*/
     
@@ -99,7 +154,6 @@ public class MusicalChairGame {
     	for (int i = 0; i < 10; i++)
     		chairs.add(new Chair(1000,1000));
         setScreen();
-        setListenerPlayer();
         setListenerButton();
     }
     
@@ -387,7 +441,6 @@ public class MusicalChairGame {
     public void launchGame() {
     	setInitOpponents();
         arenaGame.setPlayerinArena(mainplayer);
-       // startTimer();
         screenGame.setVisible(true);
     }
     
@@ -401,7 +454,7 @@ public class MusicalChairGame {
 			public void run() {
 				// TODO Auto-generated method stub
 				try {
-					node = new Node("192.168.2.5", mcg);
+					node = new Node(peerDiscoveryIP, mcg);
 					node.startPeerDiscoveryConnection();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -420,7 +473,6 @@ public class MusicalChairGame {
         // TODO code application logic here
         MusicalChairGame mcg = new MusicalChairGame();
         mcg.initGame();
-        mcg.launchGame();
         mcg.startNode();
     }
     

@@ -178,6 +178,10 @@ public class Node extends JFrame {
 					neverBeClient = true;
 					mcg.asGameDecisionMaker();
 				}
+				if (mcg.isMainPlayerCreated == false) {
+					mcg.createMainPlayer(mcg.setPlayerColor(messageRecvPD.getPeerNumber()-1));
+					mcg.launchGame();
+				}
 				if ((isConnectedAsClient == false) && (neverBeClient == false) && (messageRecvPD.getServerStatus() == true) && !(messageRecvPD.getIP().equals(Inet4Address.getLocalHost().getHostAddress())))
 					{
 					System.out.println("isConnectedAsClient : "+isConnectedAsClient+", Neverbeclient : "+neverBeClient+"Message IP : "+messageRecvPD.getIP()+", Packet PeerNumber : "+messageRecvPD.getPeerNumber());
