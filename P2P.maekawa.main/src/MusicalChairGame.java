@@ -229,6 +229,7 @@ public class MusicalChairGame {
                 mainplayer.repaint();
 	            if (isAllowedToMove) {
 	                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
+	                mainPlayerPacket.setColor(mainplayer.color);
 	                node.sendToLeft(mainPlayerPacket);
 	                node.sendToRight(mainPlayerPacket);
 	                startDelay();
