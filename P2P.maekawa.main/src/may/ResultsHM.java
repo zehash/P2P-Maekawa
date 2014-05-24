@@ -57,6 +57,15 @@ public class ResultsHM {
         } 
     }
     
+    public int countEveryoneInResults() {
+        int count = 0;
+        for (Integer key : hm.keySet()) {
+            Queue<String> q = hm.get(key);
+            count += q.size();
+        }
+        return count;
+    }
+    
     //winners are head of each queue for each chair
     public ArrayList<String> winners() {
         ArrayList<String> winners = new ArrayList<String>();
