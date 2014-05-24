@@ -235,7 +235,11 @@ public class MusicalChairGame {
 	                    case 's' : mainplayer.movePosition(0, +movement, isAllowedToMove);
 	                               break;
 	                }
-	                mainplayer.repaint();
+	                checkPlayersInChairs();
+	                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
+                    mainPlayerPacket.setColor(mainplayer.color);
+                    node.sendToLeft(mainPlayerPacket);
+                    node.sendToRight(mainPlayerPacket);
 	                /*Checking whether the main player is touching the chair*/
 	                if (isChairAppear) {
 		                boolean touching = false;
@@ -246,12 +250,7 @@ public class MusicalChairGame {
 		                	}
 		                }
 	                }
-	                checkPlayersInChairs();
 		            if (isAllowedToMove) {
-		                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
-		                mainPlayerPacket.setColor(mainplayer.color);
-		                node.sendToLeft(mainPlayerPacket);
-		                node.sendToRight(mainPlayerPacket);
 		                startDelay();
 		            }
             	}
@@ -373,6 +372,7 @@ public class MusicalChairGame {
                 }
         }
         
+        System.out.println("count : "+count);
         if (count == numOpponent+1) {
             startTimerResult();
         }
@@ -479,13 +479,14 @@ public class MusicalChairGame {
                 int seconds = 0;
                 for (seconds = 5; seconds >= 0; seconds--) {
                     timerlabel.setText(""+seconds);
-                    count = node.results.countEveryoneInResults();
                     try {
                         Thread.sleep(1000);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
+                count = node.results.countEveryoneInResults();
+                System.out.println("Last game result : "+count);
                 if (count != numOpponent+1) {
                     gamestatus.setText("draw");
                 }
