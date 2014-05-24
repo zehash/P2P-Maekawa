@@ -86,7 +86,7 @@ public class MusicalChairGame {
     		
     		JLabel label = new JLabel();
     		label.setText("You are : ");
-    		label.setBounds(10, 340, 100, 20);
+    		label.setBounds(10, 340, 200, 20);
     		playerLabel.setBackground(inColor);
     		playerLabel.setOpaque(true);
     		playerLabel.setBounds(80, 340, 100, 20);
@@ -367,7 +367,7 @@ public class MusicalChairGame {
             }
         }
         for (int i = 0; i < numOpponent+1; i++) {
-            for (int j = 0; j < numOpponent-1; j++)
+            for (int j = 0; j < numOpponent; j++)
                 if (isOverlap(opponents.get(j), chairs.get(i),true)) {
                     count++;
                 }
@@ -411,7 +411,7 @@ public class MusicalChairGame {
     		opponents.set(found, updateOpponent);
     	}
     	
-    	//checkPlayersInChairs();
+    	checkPlayersInChairs();
     }
     
     /* Update the chair information
@@ -448,7 +448,7 @@ public class MusicalChairGame {
                 int seconds = 0;
                 for (seconds = 5; seconds >= 0; seconds--) {
                     timerlabel.setText(""+seconds);
-                    if (seconds == 0) {
+                    if (seconds == 1) {
                         isChairAppear = true;
                         for (int i = 0; i < numOpponent+1; i++)
                             arenaGame.addChair(chairs.get(i));
@@ -475,26 +475,25 @@ public class MusicalChairGame {
 
             @Override
             public void run() {
+                int count = -1;
                 int seconds = 0;
                 for (seconds = 5; seconds >= 0; seconds--) {
                     timerlabel.setText(""+seconds);
-                    if (seconds == 0) {
-                        gameIsStarted = false;
-                        boolean isWin = false;
-                        for (int i = 0; i < numOpponent+1; i++) {
-                            if (isOverlap(mainplayer, chairs.get(i),true))
-                                isWin  = true;
-                        }
-                        if (isWin) {
-                            gamestatus.setText("Player Wins");
-                        } else {
-                            gamestatus.setText("Player Loses");
-                        }
-                    }
+                    count = node.results.countEveryoneInResults();
                     try {
                         Thread.sleep(1000);
                     } catch (Exception e) {
                         e.printStackTrace();
+                    }
+                }
+                if (count != numOpponent+1) {
+                    gamestatus.setText("draw");
+                }
+                else {
+                    
+                    ArrayList<String> winners = node.results.winners();
+                    for (String s: winners) {
+                        System.out.println("winner : "+s);
                     }
                 }
             }
