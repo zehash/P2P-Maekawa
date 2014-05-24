@@ -84,6 +84,12 @@ public class Node extends JFrame {
 		setVisible(true);
 		this.mcg = mcg;
 		packet = new PeerDiscoveryPacket(InetAddress.getLocalHost().getHostAddress(), 0, true, true);
+		try {
+            myIP = InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
 	}
 
 	/**
@@ -502,12 +508,6 @@ public class Node extends JFrame {
     
     //when voting round begins, call this method when i touch chair
     public void iWantChair(int chair) {
-        try {
-            myIP = InetAddress.getLocalHost().getHostAddress();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
     	myState = new State(myIP, 0, chair);
     	updateMyState(0);
     	sendState(myState);
