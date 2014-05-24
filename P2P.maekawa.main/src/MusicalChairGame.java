@@ -512,7 +512,6 @@ public class MusicalChairGame {
         MusicalChairGame mcg = new MusicalChairGame();
         mcg.initGame();
         mcg.startNode();
-        mcg.startTimer();
     }
     
 }

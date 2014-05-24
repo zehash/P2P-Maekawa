@@ -157,7 +157,8 @@ public class Client {
 					else {
 					    if (messageRecv instanceof State) {
 					        State incoming_state = (State) messageRecv;
-					        System.out.println("Incoming state from : "+incoming_state.getIP());
+					        //System.out.println("Incoming state from : "+incoming_state.getIP());
+					        node.receiveNeighbourState(incoming_state);
 					    }
 					}
 				}

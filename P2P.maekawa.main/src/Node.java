@@ -352,6 +352,7 @@ public class Node extends JFrame {
     	int status = state.getStatus();
     	String ip = state.getIP();
     	int chair = state.getChair();
+    	System.out.println("received state: " + ip + " " + status + " " + chair); //DEBUG
     	//if RELEASED
     	if (status == 1) {
 	    	boolean ignore = false;
@@ -496,8 +497,10 @@ public class Node extends JFrame {
     
     //send state to neighbours
     public void sendState(State state) {
-    	leftConnector.sendState(state);
-    	rightConnector.sendState(state);
+        if (leftConnector != null)
+            leftConnector.sendState(state);
+        if (rightConnector != null)
+            rightConnector.sendState(state);
     }
     
     //when voting round begins, call this method when i touch chair
