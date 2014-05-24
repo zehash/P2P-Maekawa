@@ -244,15 +244,17 @@ public class MusicalChairGame {
 	                /*Checking whether the main player is touching the chair*/
 	                if (isChairAppear) {
 		                boolean touching = false;
-		                for (int i= 0; i < numOpponent+1;i++)
-		                {
-		                	if (isOverlap(mainplayer,chairs.get(i),false)) {
-		                		counterPlayerInChair++;
-		                		touching = true;
-		                	}
-		                }
-		                if (counterPlayerInChair == numOpponent+1) {
-		                    startTimerResult();
+		                if (gameIsStarted) {
+    		                for (int i= 0; i < numOpponent+1;i++)
+    		                {
+    		                	if (isOverlap(mainplayer,chairs.get(i),false)) {
+    		                		counterPlayerInChair++;
+    		                		touching = true;
+    		                	}
+    		                }
+    		                if (counterPlayerInChair == numOpponent+1) {
+    		                    startTimerResult();
+    		                }
 		                }
 	                }
 		            if (isAllowedToMove) {
@@ -363,26 +365,6 @@ public class MusicalChairGame {
     	t.start();
     }
     
-    public void checkPlayersInChairs() {
-        int count = 0;
-        for (int i = 0; i < numOpponent+1; i++) {
-            if (isOverlap(mainplayer, chairs.get(i),true)) {
-                count++;
-            }
-        }
-        for (int i = 0; i < numOpponent+1; i++) {
-            for (int j = 0; j < numOpponent; j++)
-                if (isOverlap(opponents.get(j), chairs.get(i),true)) {
-                    count++;
-                }
-        }
-        
-        System.out.println("count : "+count);
-        if (count == numOpponent+1) {
-            startTimerResult();
-        }
-    }
-    
     public int getPlayerIndex(String IP) {
     	int found = -1;
     	for (int i = 0; i < opponents.size(); i++) {
@@ -417,14 +399,16 @@ public class MusicalChairGame {
     		opponents.set(found, updateOpponent);
     	}
     	
-    	for (int i = 0; i < numOpponent+1; i++)
-    	{
-    	    if (isOverlap(updateOpponent,chairs.get(i),true))
-    	        counterPlayerInChair++;
+    	if (gameIsStarted) {
+        	for (int i = 0; i < numOpponent+1; i++)
+        	{
+        	    if (isOverlap(updateOpponent,chairs.get(i),true))
+        	        counterPlayerInChair++;
+        	}
+        	if (counterPlayerInChair == numOpponent+1) {
+                startTimerResult();
+            }
     	}
-    	if (counterPlayerInChair == numOpponent+1) {
-            startTimerResult();
-        }
     }
     
     /* Update the chair information
