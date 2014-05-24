@@ -235,7 +235,6 @@ public class MusicalChairGame {
 	                    case 's' : mainplayer.movePosition(0, +movement, isAllowedToMove);
 	                               break;
 	                }
-	                checkPlayersInChairs();
 	                NodePacket mainPlayerPacket = new NodePacket(mainplayer.name, mainplayer.positionX, mainplayer.positionY);
                     mainPlayerPacket.setColor(mainplayer.color);
                     node.sendToLeft(mainPlayerPacket);
@@ -251,6 +250,7 @@ public class MusicalChairGame {
 		                }
 	                }
 		            if (isAllowedToMove) {
+		                checkPlayersInChairs();
 		                startDelay();
 		            }
             	}
