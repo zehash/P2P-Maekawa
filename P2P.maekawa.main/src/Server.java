@@ -3,6 +3,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -41,7 +42,8 @@ public class Server {
 	 */
 	public void startServer() {
 		try {
-			server = new ServerSocket(1234, 100);
+		    if (server == null)
+		        server = new ServerSocket(1234, 100);
 			while (true) {
 				try {
 					waitforConnection(); // Wait until a connection is made
@@ -55,7 +57,16 @@ public class Server {
 				}
 			}
 		} catch (IOException ioException) {
-			ioException.printStackTrace();
+		    System.out.println("\n Connection lost to other");
+		    node.serverFree = true;
+		    try {
+		        node.setPacket(InetAddress.getLocalHost().getHostAddress(), 0,node.isConnectedAsClient, node.serverFree);
+		    } catch (Exception e) {
+		        System.out.println("Address Error");
+		    }
+            node.sendMessagePD();
+		    node.startNodeServer();
+		    //ioException.printStackTrace();
 		}
 
 	}

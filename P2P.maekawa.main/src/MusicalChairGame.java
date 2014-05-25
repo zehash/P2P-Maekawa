@@ -27,7 +27,7 @@ import may.State;
 import may.Vote;
 
 public class MusicalChairGame {
-	final String peerDiscoveryIP = "10.9.187.131";
+	final String peerDiscoveryIP = "10.9.186.11";
 	
     JFrame screenGame = new JFrame();
     JLabel timerlabel = new JLabel();
@@ -61,6 +61,7 @@ public class MusicalChairGame {
     public boolean isChairAppear = false;
     public boolean isTouchingChair = false; //To immobilize the player
     public boolean gameIsStarted = false;
+    public int availablePlayer = 1;
     Vote vote;
     State state;
     
@@ -203,6 +204,7 @@ public class MusicalChairGame {
         	opponents.add(opponent);
     	}
     }
+
     
     /*initialize the main player position at the beginning of the game*/
     public void setInitPlayerPosition() {
@@ -213,6 +215,17 @@ public class MusicalChairGame {
         initPlayerY = 1;
         while (initPlayerY % 5 != 0)
         	initPlayerY = randomGenerator.nextInt(300-40);
+    }
+    
+    /*Removing opponent on the game*/
+    public void removePlayer(String opponentIP) {
+        int found = getPlayerIndex(opponentIP);
+        
+        Player updateOpponent = opponents.get(found);
+        updateOpponent.positionX = 1000;
+        updateOpponent.positionY = 1000;
+        updateOpponent.repaint();
+        availablePlayer++;
     }
     
     public void setListenerPlayer() {
@@ -252,7 +265,7 @@ public class MusicalChairGame {
     		                		touching = true;
     		                	}
     		                }
-    		                if (counterPlayerInChair == numOpponent+1) {
+    		                if (counterPlayerInChair == availablePlayer) {
     		                    startTimerResult();
     		                }
 		                }
@@ -343,7 +356,7 @@ public class MusicalChairGame {
     		if (readyStatus[i] == 1)
     			count++;
     	}
-    	return (count == numOpponent);
+    	return (count == availablePlayer);
     }
     
     public void startDelay() {
@@ -383,13 +396,14 @@ public class MusicalChairGame {
     	
     	if (found == -1) {
     		numOpponent++;
-    		updateOpponent = opponents.get(numOpponent-1);
+    		availablePlayer++;
+    		updateOpponent = opponents.get(-1);
     		updateOpponent.name = new String(playerPacket.getName());
     		updateOpponent.color = playerPacket.getColor();
     		updateOpponent.positionX = playerPacket.getPositionX();
     		updateOpponent.positionY = playerPacket.getPositionY();
     		updateOpponent.repaint();
-    		opponents.set(numOpponent-1, updateOpponent);
+    		opponents.set(-1, updateOpponent);
     	} else {
     		updateOpponent = opponents.get(found);
     		updateOpponent.color = playerPacket.getColor();
@@ -405,7 +419,7 @@ public class MusicalChairGame {
         	    if (isOverlap(updateOpponent,chairs.get(i),true))
         	        counterPlayerInChair++;
         	}
-        	if (counterPlayerInChair == numOpponent+1) {
+        	if (counterPlayerInChair == availablePlayer) {
                 startTimerResult();
             }
     	}
@@ -488,7 +502,7 @@ public class MusicalChairGame {
                 node.debugAlreadyVoted();
                 node.debugMyVotes();
                 node.results.printAllResults();
-                if (count != numOpponent+1) {
+                if (count != +1) {
                     gamestatus.setText("draw");
                 }
                 else {

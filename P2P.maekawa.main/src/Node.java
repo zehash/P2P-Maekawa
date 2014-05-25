@@ -47,9 +47,11 @@ public class Node extends JFrame {
 	private PeerDiscoveryPacket messageRecvPD; // Packets received from PD
 	private MusicalChairGame mcg;
 	private Node node = this;
-	private boolean isConnectedAsClient = false;
+	public boolean isConnectedAsClient = false;
 	private boolean neverBeClient = false;
-
+	private Thread serverThread;
+	private Thread clientThread;
+	private int currentOpponent;
 	///////////////////////////
 	
     public State myState; //which chair the node wants
@@ -63,7 +65,7 @@ public class Node extends JFrame {
     public String myIP; //my ip address
     public ArrayList<String> whoVotedForMe = new ArrayList<String>(); //nodes who sent vote to me
     public ResultsHM results = new ResultsHM();
-    
+    public boolean serverFree = true;
     /*
     Getting a number of players : mcg.numOpponent+1
     
@@ -87,13 +89,17 @@ public class Node extends JFrame {
 		setSize(400, 150);
 		setVisible(true);
 		this.mcg = mcg;
-		packet = new PeerDiscoveryPacket(InetAddress.getLocalHost().getHostAddress(), 0, true, true);
+		packet = new PeerDiscoveryPacket(InetAddress.getLocalHost().getHostAddress(), 0, true, true, false);
 		try {
             myIP = InetAddress.getLocalHost().getHostAddress();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+	}
+	
+	public void setPacket(String ip, int number, boolean client, boolean server) {
+	    packet = new PeerDiscoveryPacket(ip,0,client,server,false);
 	}
 
 	/**
@@ -169,27 +175,35 @@ public class Node extends JFrame {
 		inputPD = new ObjectInputStream(connectionPeerD.getInputStream());
 		// No need to flush (Other PC does that)
 		showMessage("\nStreams Peer Discovery is now setup \n");
-		try {
-			Thread serverThread = new Thread(new Runnable() {
+		startNodeServer();
+	}
+	
+	@SuppressWarnings("deprecation")
+    public void startNodeServer() {
+	    if (serverThread != null) {
+	        serverThread.stop();
+	        serverThread = null;
+	    }
+	    try {
+            serverThread = new Thread(new Runnable() {
 
-				@Override
-				public void run() {
-					try {
-						rightConnector = new Server(mcg, "1234", node);
-						rightConnector.startServer();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				
-			});
-			serverThread.start();
-			System.out.println("Sending a packet : "+packet.getIP()+", Server Status : "+packet.getServerStatus());
-			sendMessagePD();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+                @Override
+                public void run() {
+                    try {
+                        rightConnector = new Server(mcg, "1234", node);
+                        rightConnector.startServer();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                
+            });
+            serverThread.start();
+            System.out.println("Sending a packet : "+packet.getIP()+", Server Status : "+packet.getServerStatus());
+            sendMessagePD();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 	
 	/**
@@ -205,41 +219,47 @@ public class Node extends JFrame {
 			try {
 				messageRecvPD = (PeerDiscoveryPacket) inputPD.readObject(); // Read incomming stream
 				showMessage("\n" + "IPAddress : "+messageRecvPD.getIP()+"Server : "+messageRecvPD.getServerStatus()+"Client : "+messageRecvPD.getClientStatus());
-				if (messageRecvPD.getPeerNumber() == 1)
+				if (messageRecvPD.getIsRemoved() == false)
 				{
-					neverBeClient = true;
-					mcg.asGameDecisionMaker();
+    				if (messageRecvPD.getPeerNumber() == 1)
+    				{
+    					neverBeClient = true;
+    					mcg.asGameDecisionMaker();
+    				}
+    				if (mcg.isMainPlayerCreated == false) {
+    					mcg.createMainPlayer(mcg.setPlayerColor(messageRecvPD.getPeerNumber()-1));
+    					mcg.launchGame();
+    				}
+    				if ((isConnectedAsClient == false) && (neverBeClient == false) && (messageRecvPD.getServerStatus() == true) && !(messageRecvPD.getIP().equals(Inet4Address.getLocalHost().getHostAddress())))
+    					{
+    					System.out.println("isConnectedAsClient : "+isConnectedAsClient+", Neverbeclient : "+neverBeClient+"Message IP : "+messageRecvPD.getIP()+", Packet PeerNumber : "+messageRecvPD.getPeerNumber());
+    					leftConnector = new Client(messageRecvPD.getIP(), mcg, this);
+    					
+    						try {
+    							clientThread = new Thread(new Runnable() {
+    								@Override
+    								public void run() {
+    									try {
+    										System.out.println("Try connecting to "+messageRecvPD.getIP()+", This IP : "+Inet4Address.getLocalHost().getHostAddress());
+    										leftConnector.startClient();
+    									} catch (Exception e) {
+    										e.printStackTrace();
+    									}
+    								}
+    								
+    							});
+    							clientThread.start();
+    							packet.setClientStatus(false);
+    							isConnectedAsClient = true;
+    						} catch (Exception e) {
+    							e.printStackTrace();
+    						}
+    					}
 				}
-				if (mcg.isMainPlayerCreated == false) {
-					mcg.createMainPlayer(mcg.setPlayerColor(messageRecvPD.getPeerNumber()-1));
-					mcg.launchGame();
+				else {
+				    mcg.removePlayer(messageRecvPD.getIP());
 				}
-				if ((isConnectedAsClient == false) && (neverBeClient == false) && (messageRecvPD.getServerStatus() == true) && !(messageRecvPD.getIP().equals(Inet4Address.getLocalHost().getHostAddress())))
-					{
-					System.out.println("isConnectedAsClient : "+isConnectedAsClient+", Neverbeclient : "+neverBeClient+"Message IP : "+messageRecvPD.getIP()+", Packet PeerNumber : "+messageRecvPD.getPeerNumber());
-					leftConnector = new Client(messageRecvPD.getIP(), mcg, this);
-					
-						try {
-							Thread clientThread = new Thread(new Runnable() {
-								@Override
-								public void run() {
-									try {
-										System.out.println("Try connecting to "+messageRecvPD.getIP()+", This IP : "+Inet4Address.getLocalHost().getHostAddress());
-										leftConnector.startClient();
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-								}
-								
-							});
-							clientThread.start();
-							packet.setClientStatus(false);
-							isConnectedAsClient = true;
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				}
+			}
 			catch (ClassNotFoundException cnfException) {
 				showMessage("\nUser sent some corrupted data...");
 			} catch (Exception e1) {
@@ -249,6 +269,18 @@ public class Node extends JFrame {
 
 	}
 
+	/*Relisten the connection from node*/
+	public void relistenPD() {
+	    if (clientThread != null) {
+	        clientThread.stop();
+	        clientThread = null;
+	    }
+	    try {
+	        listenPD();
+	    } catch (Exception e) {
+	        System.out.println("Re-connecting to client error");
+	    }
+	}
 	/**
 	 * Close streams and sockets after the connection is cut
 	 */

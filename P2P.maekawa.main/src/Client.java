@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.Socket;
 
 import may.State;
@@ -54,6 +55,15 @@ public class Client {
 			ioException.printStackTrace();
 		} finally {
 		//	closeSockets();
+		    System.out.println("\n Connection lost to other");
+            node.isConnectedAsClient = false;
+            try {
+                node.setPacket(InetAddress.getLocalHost().getHostAddress(), 0,node.isConnectedAsClient, node.serverFree);
+            } catch (Exception e) {
+                System.out.println("Address Error");
+            }
+            node.sendMessagePD();
+            node.relistenPD();
 		}
 	}
 	

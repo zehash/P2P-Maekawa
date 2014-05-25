@@ -223,6 +223,16 @@ public class PeerDiscovery {
 			}
 		}
 		
+		  /**
+         * Scan for all available active Node(s)/Peer(s) and get ready to send 
+         * them the removed/disconnected peerpacket
+         */
+		public void prepareToSendRemovalDataToPeers(PeerDiscoveryPacket peerDiscoveryPacket){
+		    for (int i = 0; i < Threads.size(); i++) {
+                    Threads.get(i).broadcastDataToPeers(peerDiscoveryPacket); 
+            }
+		}
+		
 		
 		/**
 		 * This method allows for all connected Nodes to receive discovery data
@@ -257,11 +267,13 @@ public class PeerDiscovery {
 		private void removeData(String closingConnectionIP) {
 			for(int i = 0; i < nodeTable.size(); i++) {
 				if(closingConnectionIP.compareTo(nodeTable.get(i).getIP()) == 0){
+				    nodeTable.get(i).setIsRemoved(true);
+					prepareToSendRemovalDataToPeers(nodeTable.get(i));
 					nodeTable.remove(i);
 				}
 			}
 			
-			prepareToSendDataToPeers();
+			
 		}
 		
 		/**
