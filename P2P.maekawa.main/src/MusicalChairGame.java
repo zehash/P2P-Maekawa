@@ -360,7 +360,7 @@ public class MusicalChairGame {
     		if (readyStatus[i] == 1)
     			count++;
     	}
-    	return (count == availablePlayer);
+    	return (count == availablePlayer-1);
     }
     
     public void startDelay() {
