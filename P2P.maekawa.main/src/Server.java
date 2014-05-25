@@ -44,6 +44,7 @@ public class Server {
 		try {
 		    if (server == null)
 		        server = new ServerSocket(1234, 100);
+		    output = null;
 			while (true) {
 				try {
 					waitforConnection(); // Wait until a connection is made

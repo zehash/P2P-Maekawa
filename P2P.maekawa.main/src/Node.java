@@ -218,7 +218,7 @@ public class Node extends JFrame {
 			// Have a connection
 			try {
 				messageRecvPD = (PeerDiscoveryPacket) inputPD.readObject(); // Read incomming stream
-				showMessage("\n" + "IPAddress : "+messageRecvPD.getIP()+"Server : "+messageRecvPD.getServerStatus()+"Client : "+messageRecvPD.getClientStatus());
+				showMessage("\n" + "IPAddress : "+messageRecvPD.getIP()+"Server : "+messageRecvPD.getServerStatus()+"Client : "+messageRecvPD.getClientStatus()+"isRemoved : "+messageRecvPD.getIsRemoved());
 				if (messageRecvPD.getIsRemoved() == false)
 				{
     				if (messageRecvPD.getPeerNumber() == 1)
@@ -271,6 +271,7 @@ public class Node extends JFrame {
 
 	/*Relisten the connection from node*/
 	public void relistenPD() {
+	    leftConnector = null;
 	    if (clientThread != null) {
 	        clientThread.stop();
 	        clientThread = null;
