@@ -27,7 +27,7 @@ import may.State;
 import may.Vote;
 
 public class MusicalChairGame {
-	final String peerDiscoveryIP = "10.9.186.11";
+	final String peerDiscoveryIP = "10.9.178.52";
 	
     JFrame screenGame = new JFrame();
     JLabel timerlabel = new JLabel();
@@ -225,7 +225,7 @@ public class MusicalChairGame {
         updateOpponent.positionX = 1000;
         updateOpponent.positionY = 1000;
         updateOpponent.repaint();
-        availablePlayer++;
+        availablePlayer--;
     }
     
     public void setListenerPlayer() {

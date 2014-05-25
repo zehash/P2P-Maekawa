@@ -52,9 +52,6 @@ public class Client {
 		} catch (EOFException eofException) {
 			System.out.println("\n Client Closed the Connection");
 		} catch (IOException ioException) {
-			ioException.printStackTrace();
-		} finally {
-		//	closeSockets();
 		    System.out.println("\n Connection lost to other");
             node.isConnectedAsClient = false;
             try {
@@ -64,6 +61,8 @@ public class Client {
             }
             node.sendMessagePD();
             node.relistenPD();
+		} finally {
+		//	closeSockets();
 		}
 	}
 	
