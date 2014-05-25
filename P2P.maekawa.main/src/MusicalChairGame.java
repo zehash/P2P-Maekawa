@@ -141,7 +141,11 @@ public class MusicalChairGame {
  
         timerlabel.setText("0");
         timerlabel.setBounds(10, 320, 100, 20);
-        gamestatus.setText("Game started..");
+        try {
+            gamestatus.setText(InetAddress.getLocalHost().getHostAddress());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         gamestatus.setBounds(300,310,100,20);
         startGame.setText("Ready");
         startGame.setBounds(300, 340, 100, 20);
