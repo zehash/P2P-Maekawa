@@ -397,13 +397,13 @@ public class MusicalChairGame {
     	if (found == -1) {
     		numOpponent++;
     		availablePlayer++;
-    		updateOpponent = opponents.get(-1);
+    		updateOpponent = opponents.get(numOpponent-1);
     		updateOpponent.name = new String(playerPacket.getName());
     		updateOpponent.color = playerPacket.getColor();
     		updateOpponent.positionX = playerPacket.getPositionX();
     		updateOpponent.positionY = playerPacket.getPositionY();
     		updateOpponent.repaint();
-    		opponents.set(-1, updateOpponent);
+    		opponents.set(numOpponent-1, updateOpponent);
     	} else {
     		updateOpponent = opponents.get(found);
     		updateOpponent.color = playerPacket.getColor();
@@ -502,7 +502,7 @@ public class MusicalChairGame {
                 node.debugAlreadyVoted();
                 node.debugMyVotes();
                 node.results.printAllResults();
-                if (count != +1) {
+                if (count != numOpponent+1) {
                     gamestatus.setText("draw");
                 }
                 else {
