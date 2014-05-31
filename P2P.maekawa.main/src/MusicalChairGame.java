@@ -26,8 +26,9 @@ import javax.swing.JLabel;
 import may.State;
 import may.Vote;
 
+
 public class MusicalChairGame {
-	final String peerDiscoveryIP = "10.9.178.52";
+	final String peerDiscoveryIP = "192.168.62.1";
 	
     JFrame screenGame = new JFrame();
     JLabel timerlabel = new JLabel();

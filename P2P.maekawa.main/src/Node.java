@@ -506,6 +506,7 @@ public class Node extends JFrame {
     	}
     	else {
     		Vote vote = new Vote(myIP, ip, chair);
+    		System.out.println("Send vote for : "+ip+" chair : "+chair);
     		if (leftConnector != null) {
     		    leftConnector.sendVote(vote);
     		}
